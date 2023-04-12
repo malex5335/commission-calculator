@@ -3,25 +3,26 @@ package de.riagade.provisioncalculator.configurations
 import de.riagade.provisioncalculator.*
 import de.riagade.provisioncalculator.entities.*
 import java.math.BigDecimal
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.*
 
 class FixTransactionAmount(
     private val database: Database,
-    private val amount: BigDecimal
+    private val amount: BigDecimal,
+    private val name: String,
+    private val now: LocalDate = LocalDate.now()
 ): Configuration {
 
     override fun name(): String {
-        val uuid = UUID.randomUUID().toString().subSequence(0, 5)
-        return "FixAmountConfiguration-$uuid"
+        return name
     }
 
     override fun shouldBeCalculated(): Boolean {
-        return true
+        return now.dayOfWeek.equals(DayOfWeek.MONDAY)
     }
 
     override fun relevantTimespan(): Configuration.Timespan {
-        val now = LocalDate.now()
         return Configuration.Timespan(
             start = now.withDayOfMonth(1),
             end = now.withDayOfMonth(now.month.length(now.isLeapYear)),
@@ -31,16 +32,7 @@ class FixTransactionAmount(
 
     override fun calculate(transactionsInTimespan: List<Transaction>): List<Provision> {
         val provisions = mutableListOf<Provision>()
-        val transactionsForBroker = transactionsInTimespan
-            .filter { !database.wasCalculatedBefore(it, this) }
-            .filter { it.status == Transaction.Status.SALE }
-            .groupBy { database.brokerFromCode(it.brokerCode) }
-            .map { (broker, transactions) ->
-                broker to transactions
-                    .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
-                    .filter { broker.wasActiveAt(it.sale.toLocalDate()) }
-            }
-        transactionsForBroker.forEach { (broker, transactions) ->
+        transactionsByBroker(transactionsInTimespan).forEach { (broker, transactions) ->
             val singleTransactionAmounts = transactions.map { it to Optional.of(amount) }
             provisions.add(
                 Provision(
@@ -55,5 +47,17 @@ class FixTransactionAmount(
             )
         }
         return provisions
+    }
+
+    private fun transactionsByBroker(transactionsInTimespan: List<Transaction>): Map<Broker, List<Transaction>> {
+        return transactionsInTimespan
+            .filter { !database.wasCalculatedBefore(it, this) }
+            .filter { it.status == Transaction.Status.SALE }
+            .groupBy { database.brokerFromCode(it.brokerCode) }
+            .map { (broker, transactions) ->
+                broker to transactions
+                    .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
+                    .filter { broker.wasActiveAt(it.sale.toLocalDate()) }
+            }.toMap()
     }
 }
