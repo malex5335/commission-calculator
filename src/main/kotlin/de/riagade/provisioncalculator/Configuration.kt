@@ -5,8 +5,8 @@ import java.time.LocalDate
 
 interface Configuration {
     fun name(): String
-    fun shouldBeCalculated(): Boolean
-    fun relevantTimespan(): Timespan
+    fun canBeCalculatedAt(date: LocalDate): Boolean
+    fun relevantTimespanAround(date: LocalDate): Timespan
     fun calculate(transactionsInTimespan: List<Transaction>): List<Provision>
 
     data class Timespan(

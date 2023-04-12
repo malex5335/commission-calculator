@@ -10,22 +10,21 @@ import java.util.*
 class FixTransactionAmount(
     private val database: Database,
     private val amount: BigDecimal,
-    private val name: String,
-    private val now: LocalDate = LocalDate.now()
+    private val name: String
 ): Configuration {
 
     override fun name(): String {
         return name
     }
 
-    override fun shouldBeCalculated(): Boolean {
-        return now.dayOfWeek.equals(DayOfWeek.MONDAY)
+    override fun canBeCalculatedAt(date: LocalDate): Boolean {
+        return date.dayOfWeek.equals(DayOfWeek.MONDAY)
     }
 
-    override fun relevantTimespan(): Configuration.Timespan {
+    override fun relevantTimespanAround(date: LocalDate): Configuration.Timespan {
         return Configuration.Timespan(
-            start = now.withDayOfMonth(1),
-            end = now.withDayOfMonth(now.month.length(now.isLeapYear)),
+            start = date.withDayOfMonth(1),
+            end = date.withDayOfMonth(date.month.length(date.isLeapYear)),
             basis = Configuration.TimespanBasis.SALE
         )
     }
