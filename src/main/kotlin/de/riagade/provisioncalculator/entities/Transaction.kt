@@ -4,6 +4,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class Transaction(
+    val id: String,
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val lead: LocalDateTime,

@@ -3,10 +3,9 @@ package de.riagade.provisioncalculator
 import java.time.LocalDate
 
 class Calculator(
-    private val database: Database,
-    private val now: LocalDate = LocalDate.now()
+    private val database: Database
 ) {
-    fun calculateConfigurations() {
+    fun calculateConfigurations(now: LocalDate) {
         database.allConfigurations()
             .filter { it.canBeCalculatedAt(now) }
             .forEach { configuration ->

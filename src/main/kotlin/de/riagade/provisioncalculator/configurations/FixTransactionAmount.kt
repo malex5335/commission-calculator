@@ -23,8 +23,8 @@ class FixTransactionAmount(
 
     override fun relevantTimespanAround(date: LocalDate): Configuration.Timespan {
         return Configuration.Timespan(
-            start = date.withDayOfMonth(1),
-            end = date.withDayOfMonth(date.month.length(date.isLeapYear)),
+            from = date.withDayOfMonth(1),
+            to = date.withDayOfMonth(date.month.length(date.isLeapYear)),
             basis = Configuration.TimespanBasis.SALE
         )
     }

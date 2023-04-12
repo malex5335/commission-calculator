@@ -10,8 +10,8 @@ interface Configuration {
     fun calculate(transactionsInTimespan: List<Transaction>): List<Provision>
 
     data class Timespan(
-        val start: LocalDate,
-        val end: LocalDate,
+        val from: LocalDate,
+        val to: LocalDate,
         val basis: TimespanBasis
     )
 
