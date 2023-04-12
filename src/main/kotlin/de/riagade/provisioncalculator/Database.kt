@@ -1,5 +1,7 @@
 package de.riagade.provisioncalculator
 
+import de.riagade.provisioncalculator.entities.*
+
 interface Database {
     fun allConfigurations(): List<Configuration>
     fun allTransactionsInTimespan(timespan: Configuration.Timespan): List<Transaction>

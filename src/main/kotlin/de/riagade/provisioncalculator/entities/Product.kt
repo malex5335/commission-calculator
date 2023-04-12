@@ -1,4 +1,4 @@
-package de.riagade.provisioncalculator
+package de.riagade.provisioncalculator.entities
 
 data class Product(
     val name: String,

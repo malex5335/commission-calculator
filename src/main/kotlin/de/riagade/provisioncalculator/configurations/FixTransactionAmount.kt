@@ -1,6 +1,7 @@
-package de.riagade.provisioncalculator.strategies
+package de.riagade.provisioncalculator.configurations
 
 import de.riagade.provisioncalculator.*
+import de.riagade.provisioncalculator.entities.*
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
