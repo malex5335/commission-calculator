@@ -8,9 +8,9 @@ data class Provision(
     val sum: BigDecimal,
     val transactions: Map<Transaction, Optional<BigDecimal>>,
     val configurationName: String,
-    val status: ProvisionStatus
+    val status: Status
 ) {
-    enum class ProvisionStatus {
+    enum class Status {
         CALCULATED, ACCEPTED, REJECTED
     }
 }

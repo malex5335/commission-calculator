@@ -4,11 +4,11 @@ import java.time.LocalDate
 
 data class Broker(
     val name: String,
-    val statusHistory: Map<LocalDate, BrokerStatus>,
+    val statusHistory: Map<LocalDate, Status>,
     val codes: List<String>,
     val bankDetails: BankDetails
 ) {
-    enum class BrokerStatus {
+    enum class Status {
         ACTIVE, INACTIVE
     }
 
@@ -21,7 +21,7 @@ data class Broker(
     fun wasActiveAt(date: LocalDate): Boolean {
         var beforeDate = LocalDate.MAX
         statusHistory.toSortedMap(Comparator.reverseOrder()).forEach { (dateOfStatus, status) ->
-            if (date in dateOfStatus..beforeDate && status == BrokerStatus.ACTIVE) {
+            if (date in dateOfStatus..beforeDate && status == Status.ACTIVE) {
                 return true
             }
             if (date > dateOfStatus) {

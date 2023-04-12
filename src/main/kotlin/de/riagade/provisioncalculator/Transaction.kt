@@ -8,13 +8,13 @@ data class Transaction(
     val updated: LocalDateTime,
     val lead: LocalDateTime,
     val sale: LocalDateTime,
-    val status: TransactionStatus,
+    val status: Status,
     val product: Product,
     val volume: BigDecimal,
     val brokerCode: String,
     val additionalOptions: Map<String, String>
 ) {
-    enum class TransactionStatus {
+    enum class Status {
         LEAD, SALE
     }
 }

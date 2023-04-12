@@ -5,16 +5,16 @@ import java.time.LocalDate
 interface Configuration {
     fun name(): String
     fun shouldBeCalculated(): Boolean
-    fun relevantTimespan(): ConfigurationTimespan
+    fun relevantTimespan(): Timespan
     fun calculate(transactionsInTimespan: List<Transaction>): List<Provision>
 
-    data class ConfigurationTimespan(
+    data class Timespan(
         val start: LocalDate,
         val end: LocalDate,
-        val basis: ConfigurationTimespanBasis
+        val basis: TimespanBasis
     )
 
-    enum class ConfigurationTimespanBasis {
+    enum class TimespanBasis {
         CREATED, UPDATED, LEAD, SALE
     }
 }

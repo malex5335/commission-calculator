@@ -2,10 +2,10 @@ package de.riagade.provisioncalculator
 
 data class Product(
     val name: String,
-    val group: ProductGroup,
+    val group: Group,
     val mandatoryOptions: List<String>
 ) {
-    data class ProductGroup(
+    data class Group(
         val name: String,
         val mandatoryOptions: List<String>
     )

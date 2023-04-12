@@ -1,16 +1,12 @@
 package de.riagade.provisioncalculator.strategies
 
 import de.riagade.provisioncalculator.*
-import de.riagade.provisioncalculator.Configuration.*
-import de.riagade.provisioncalculator.Provision.*
-import de.riagade.provisioncalculator.Transaction.*
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
 
 class FixTransactionAmount(
-    private val provisionChecker: ProvisionChecker,
-    private val brokerFinder: BrokerFinder,
+    private val database: Database,
     private val amount: BigDecimal
 ): Configuration {
 
@@ -23,21 +19,21 @@ class FixTransactionAmount(
         return true
     }
 
-    override fun relevantTimespan(): ConfigurationTimespan {
+    override fun relevantTimespan(): Configuration.Timespan {
         val now = LocalDate.now()
-        return ConfigurationTimespan(
+        return Configuration.Timespan(
             start = now.withDayOfMonth(1),
             end = now.withDayOfMonth(now.month.length(now.isLeapYear)),
-            basis = ConfigurationTimespanBasis.SALE
+            basis = Configuration.TimespanBasis.SALE
         )
     }
 
     override fun calculate(transactionsInTimespan: List<Transaction>): List<Provision> {
         val provisions = mutableListOf<Provision>()
         val transactionsForBroker = transactionsInTimespan
-            .filter { !provisionChecker.wasCalculatedBefore(it, name()) }
-            .filter { it.status == TransactionStatus.SALE }
-            .groupBy { brokerFinder.findBrokerForCode(it.brokerCode) }
+            .filter { !database.wasCalculatedBefore(it, this) }
+            .filter { it.status == Transaction.Status.SALE }
+            .groupBy { database.brokerFromCode(it.brokerCode) }
             .map { (broker, transactions) ->
                 broker to transactions
                     .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
@@ -53,7 +49,7 @@ class FixTransactionAmount(
                         .fold(BigDecimal.ZERO, BigDecimal::add),
                     transactions = singleTransactionAmounts.toMap(),
                     configurationName = name(),
-                    status = ProvisionStatus.CALCULATED
+                    status = Provision.Status.CALCULATED
                 )
             )
         }
