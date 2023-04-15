@@ -8,11 +8,7 @@ class Calculator(
     fun calculateConfigurations(now: LocalDate) {
         database.allConfigurations()
             .filter { it.canBeCalculatedAt(now) }
-            .forEach { configuration ->
-                val timespan = configuration.relevantTimespanAround(now)
-                val transactions = database.allTransactionsInTimespan(timespan)
-                val provisions = configuration.calculate(transactions)
-                database.saveProvisions(provisions)
-            }
+            .map { it.calculate(now, database) }
+            .forEach { database.saveProvisions(it) }
     }
 }
