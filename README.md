@@ -35,7 +35,7 @@ I on the other hand thought that microservices - if done right and using their
 full potential - are a great tool to build complex systems.\
 But I also thought that our projects - although they were complex at the end -
 didn't need to be this complex and would be better off staying a
-deployment-monolith.\
+deployment-monolith.
 
 To put my opinion into perspective, we almost ever deployed 6 to 8 if not all
 of our Microservices at the same time.\
