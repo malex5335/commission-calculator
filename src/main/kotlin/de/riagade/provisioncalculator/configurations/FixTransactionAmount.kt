@@ -21,16 +21,13 @@ class FixTransactionAmount(
         return date.dayOfWeek.equals(DayOfWeek.MONDAY)
     }
 
-    override fun relevantTimespanAround(date: LocalDate): Configuration.Timespan {
-        return Configuration.Timespan(
+    override fun calculate(date: LocalDate, database: Database): List<Provision> {
+        val provisions = mutableListOf<Provision>()
+        val transactionsInTimespan = database.allTransactionsInTimespan(Configuration.Timespan(
             from = date.withDayOfMonth(1),
             to = date.withDayOfMonth(date.month.length(date.isLeapYear)),
             basis = Configuration.TimespanBasis.SALE
-        )
-    }
-
-    override fun calculate(transactionsInTimespan: List<Transaction>): List<Provision> {
-        val provisions = mutableListOf<Provision>()
+        ))
         transactionsByBroker(transactionsInTimespan).forEach { (broker, transactions) ->
             val singleTransactionAmounts = transactions.map { it to Optional.of(amount) }
             provisions.add(
