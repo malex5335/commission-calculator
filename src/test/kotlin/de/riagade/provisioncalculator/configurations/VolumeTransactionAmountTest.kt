@@ -1,39 +1,35 @@
 package de.riagade.provisioncalculator.configurations
 
+import de.riagade.provisioncalculator.configurations.VolumeTransactionAmount.Percentage
 import de.riagade.provisioncalculator.entities.Broker
 import de.riagade.provisioncalculator.entities.Transaction
 import de.riagade.provisioncalculator.infra.*
-import org.junit.jupiter.api.*
-
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
-import java.math.BigDecimal
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class FixTransactionAmountTest {
+class VolumeTransactionAmountTest {
     private lateinit var database: MockDatabase
-    private lateinit var configuration: FixTransactionAmount
+    private lateinit var configuration: VolumeTransactionAmount
     private lateinit var name: String
-    private lateinit var amount: BigDecimal
+    private lateinit var percent: Percentage
 
     @BeforeEach
     fun setUp() {
         database = MockDatabase()
         name = randomString()
-        amount = randomAmount()
-        configuration = FixTransactionAmount(
+        percent = randomPercentage()
+        configuration = VolumeTransactionAmount(
             name = name,
-            amount = amount
+            percent = percent
         )
-    }
-
-    @AfterEach
-    fun tearDown() {
-        database.clean()
     }
 
     @Test
@@ -105,6 +101,7 @@ class FixTransactionAmountTest {
                     transactions.add(a_transaction(
                         lead = lead,
                         sale = sale,
+                        volume = randomAmount(),
                         brokerCode = brokerCode,
                         status = Transaction.Status.SALE,
                         database = database
@@ -117,15 +114,12 @@ class FixTransactionAmountTest {
                 // Then
                 assertEquals(1, provisions.size, "provision size does not match")
                 val provision = provisions.first()
-                assertEquals(
-                    amount.multiply(BigDecimal.valueOf(transactions.size.toLong())),
-                    provision.sum,
-                    "sum does not match"
-                )
+                val totalSum = transactions.sumOf { percent.calculate(it.volume) }
+                assertEquals(totalSum, provision.sum, "sum does not match")
                 assertEquals(transactions.size, provision.transactions.size, "transaction size does not match")
                 provision.transactions.forEach { (t, v) ->
                     assertTrue(transactions.contains(t), "transaction does not match")
-                    assertEquals(amount, v.orElseThrow(), "transaction value does not match")
+                    assertEquals(percent.calculate(t.volume), v.orElseThrow(), "transaction value does not match")
                 }
             }
 
@@ -135,6 +129,7 @@ class FixTransactionAmountTest {
                 val transactions = mutableListOf<Transaction>()
                 transactions.add(a_transaction(
                     lead = lead,
+                    volume = randomAmount(),
                     brokerCode = brokerCode,
                     status = Transaction.Status.LEAD,
                     database = database
@@ -154,6 +149,7 @@ class FixTransactionAmountTest {
                 transactions.add(a_transaction(
                     lead = lead,
                     sale = sale,
+                    volume = randomAmount(),
                     brokerCode = randomString(),
                     status = Transaction.Status.SALE,
                     database = database
@@ -175,6 +171,7 @@ class FixTransactionAmountTest {
                     val transaction = a_transaction(
                         lead = lead,
                         sale = sale,
+                        volume = randomAmount(),
                         brokerCode = brokerCode,
                         status = Transaction.Status.SALE,
                         database = database
@@ -249,6 +246,7 @@ class FixTransactionAmountTest {
                     lead = lead,
                     sale = sale,
                     brokerCode = brokerCode,
+                    volume = randomAmount(),
                     status = Transaction.Status.SALE,
                     database = database
                 )
@@ -281,6 +279,7 @@ class FixTransactionAmountTest {
                 a_transaction(
                     lead = lead,
                     sale = sale,
+                    volume = randomAmount(),
                     brokerCode = brokerCode,
                     status = Transaction.Status.SALE,
                     database = database
@@ -318,6 +317,7 @@ class FixTransactionAmountTest {
                 val transaction = a_transaction(
                     lead = lead,
                     sale = sale,
+                    volume = randomAmount(),
                     brokerCode = brokerCode,
                     status = Transaction.Status.SALE,
                     database = database
@@ -329,6 +329,7 @@ class FixTransactionAmountTest {
                 // Then
                 assertEquals(1, provisions.size, "provision size does not match")
                 val provision = provisions.first()
+                val amount = percent.calculate(transaction.volume)
                 assertEquals(amount, provision.sum, "sum does not match")
                 assertEquals(1, provision.transactions.size, "transaction size does not match")
                 provision.transactions.forEach { (t, v) ->

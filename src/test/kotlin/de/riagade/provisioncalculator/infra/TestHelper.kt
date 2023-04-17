@@ -1,6 +1,7 @@
 package de.riagade.provisioncalculator.infra
 
 import de.riagade.provisioncalculator.*
+import de.riagade.provisioncalculator.configurations.VolumeTransactionAmount
 import de.riagade.provisioncalculator.entities.*
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -144,7 +145,11 @@ fun randomString(): String {
 }
 
 fun randomAmount(): BigDecimal {
-    return BigDecimal(random().nextDouble(0.0, 100000.0)).setScale(2, RoundingMode.HALF_EVEN)
+    return BigDecimal(random().nextDouble(0.0, 100_000_000.0)).setScale(2, RoundingMode.HALF_EVEN)
+}
+
+fun randomPercentage(): VolumeTransactionAmount.Percentage {
+    return VolumeTransactionAmount.Percentage.of(random().nextDouble(0.0, 100.0))
 }
 
 fun randomDate(): LocalDate {

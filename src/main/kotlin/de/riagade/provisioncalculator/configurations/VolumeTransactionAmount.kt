@@ -1,17 +1,18 @@
 package de.riagade.provisioncalculator.configurations
 
-import de.riagade.provisioncalculator.*
+import de.riagade.provisioncalculator.Configuration
+import de.riagade.provisioncalculator.Database
 import de.riagade.provisioncalculator.entities.*
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.*
 
-class FixTransactionAmount(
-    private val name: String,
-    private val amount: BigDecimal
+class VolumeTransactionAmount(
+    val name: String,
+    val percent: Percentage
 ): Configuration {
-
     override fun name(): String {
         return name
     }
@@ -25,7 +26,7 @@ class FixTransactionAmount(
         val relevantTransactions = newTransactionsSoldThisMonth(this, date, database)
         mapToActiveBrokers(relevantTransactions, database)
             .forEach { (broker, transactions) ->
-                val transactionAmounts = transactions.map { it to Optional.of(amount) }
+                val transactionAmounts = transactions.map { it to Optional.of(percent.calculate(it.volume)) }
                 if(transactionAmounts.isNotEmpty()) {
                     provisions.add(
                         Provision(
@@ -39,5 +40,23 @@ class FixTransactionAmount(
                 }
             }
         return provisions
+    }
+
+    data class Percentage(
+        private val value: Double
+    ) {
+        fun calculate(amount: BigDecimal): BigDecimal {
+            return amount.multiply(BigDecimal(value)).divide(BigDecimal(100)).setScale(2, RoundingMode.HALF_UP)
+        }
+
+        companion object {
+            fun of(value: Double): Percentage {
+                if(value !in 0.0..100.0) {
+                    throw IllegalArgumentException("Percentage $value must be between 0 and 100")
+                }
+                val roundedValue = BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()
+                return Percentage(roundedValue)
+            }
+        }
     }
 }
