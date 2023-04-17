@@ -86,7 +86,7 @@ class FixTransactionAmountTest {
         }
 
         @Nested
-        inner class WithActiveBroker {
+        inner class BrokerActive {
 
             @BeforeEach
             fun setUp() {
@@ -169,7 +169,7 @@ class FixTransactionAmountTest {
         }
 
         @Nested
-        inner class WithOnlySaleActiveBroker {
+        inner class BrokerActiveOnlySale {
 
             @BeforeEach
             fun setUp() {
@@ -202,7 +202,7 @@ class FixTransactionAmountTest {
         }
 
         @Nested
-        inner class WithOnlyLeadActiveBroker {
+        inner class BrokerActiveOnlyLead {
 
             @BeforeEach
             fun setUp() {
@@ -236,7 +236,7 @@ class FixTransactionAmountTest {
         }
 
         @Nested
-        inner class WithNeverActiveBroker {
+        inner class BrokerNeverActive {
 
             @BeforeEach
             fun setUp() {
@@ -269,7 +269,7 @@ class FixTransactionAmountTest {
         }
 
         @Nested
-        inner class WithCurrentlyInactiveButWasActiveBroker {
+        inner class BrokerActiveUpToSale {
 
             @BeforeEach
             fun setUp() {
