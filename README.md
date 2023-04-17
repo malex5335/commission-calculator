@@ -14,7 +14,7 @@ To be fair we had to deliver Microservices and no one of us really knew how
 to create them.\
 After 2 years we were told by some Code-Testers, that our code was functional
 at best and that we should add plenty of tests to refactor our code.\
-At this time we had around 10k LOC and 50 Tests that took 6h to run.\
+At this time we had around 100k LOC and 50 Tests that took 6h to run.\
 I was quiet young and naive at the time and didn't really understand how to
 solve all those problems or how good code looked like.\
 We had external support in form of a Software Consultant that helped us
@@ -35,7 +35,7 @@ I on the other hand thought that microservices - if done right and using their
 full potential - are a great tool to build complex systems.\
 But I also thought that our projects - although they were complex at the end -
 didn't need to be this complex and would be better off staying a
-deployment-monolith.\
+deployment-monolith.
 
 To put my opinion into perspective, we almost ever deployed 6 to 8 if not all
 of our Microservices at the same time.\
@@ -64,6 +64,7 @@ problems in mind.
 - easy extendable and maintainable code
 - new, flexible commission-calcuulations are to the upmost importance
 - fast in calculation
+- keep it as simple as possible
 - easy and meaningful test that everyone wants to add to
 - test execution including integration tests should take less than 10min
 - screw code coverage but I want 100% behavior coverage
@@ -74,7 +75,7 @@ problems in mind.
 I decided to create a Kotlin-App, because I wanted to learn Kotlin and the
 best way to learn something is to use it.\
 I also started without any framework, because I don't use what I don't need.\
-And at the start I have my tests to tell my I'm right or wrong.\
+And at the start I have my tests to tell my I'm right or wrong.
 
 ### Calculation
 
@@ -86,7 +87,7 @@ The commission types passed a lot of information to the calculation class -
 we basically created a new language that tried to inform the decision tree.
 I've worked on the commission type part of the project and had my troubles
 with it, even though I wasn't the one that came up with the idea, I was the
-one that had to maintain it and understood it the most.\
+one that had to maintain it and understood it the most.
 
 **New**:\
 This was the most outrageous part of the project, and I was really thinking
@@ -101,4 +102,4 @@ complex logic change the execution date.\
 The configurations therefore store all the complex logic and the calculation
 itself.\
 Sure we have some extravagant logic but putting it where it belongs and
-segregate it from the rest of the code makes it a lot easier to understand.\
+segregate it from the rest of the code makes it a lot easier to understand.
