@@ -68,7 +68,8 @@ problems in mind.
 - UI only through REST-APIs (we had JSF-Components before)
 - easy and meaningful test that everyone wants to add to
 - test execution including integration tests should take at max 10min
-- screw code coverage but I want 100% behavior coverage
+- tests are coupled to behaviour but not to code changes
+- screw code coverage... but I want 100% behavior coverage
 - keep documentation to a minimum and use it to explain why instead of how
 
 ## The Solution
