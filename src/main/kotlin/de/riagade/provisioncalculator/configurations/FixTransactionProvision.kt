@@ -7,6 +7,9 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.*
 
+/**
+ * A configuration that calculates a fixed amount for each transaction sold this month.
+ */
 class FixTransactionProvision(
     private val name: String,
     private val amount: BigDecimal

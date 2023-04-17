@@ -9,6 +9,9 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.*
 
+/**
+ * A configuration that calculates a percentage of the volume for each transaction sold this month.
+ */
 class VolumeTransactionProvision(
     val name: String,
     val percent: Percentage
