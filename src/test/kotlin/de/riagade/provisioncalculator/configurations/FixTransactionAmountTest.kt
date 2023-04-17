@@ -70,27 +70,27 @@ class FixTransactionAmountTest {
     }
 
     @Nested
-    inner class WithSavedConfiguration() {
+    inner class CalculateConfiguration() {
+        private lateinit var calculationDate: LocalDate
+        private lateinit var lead: LocalDateTime
+        private lateinit var sale: LocalDateTime
 
         @BeforeEach
         fun setUp() {
             database.configurations.add(configuration)
+            calculationDate = randomDate().with(DayOfWeek.MONDAY)
+            lead = calculationDate.atStartOfDay().minusMonths(1)
+            sale = calculationDate.atStartOfDay()
         }
 
         @Nested
         inner class WithLeadActiveBroker() {
             private lateinit var brokerCode: String
-            private lateinit var calculationDate: LocalDate
-            private lateinit var lead: LocalDateTime
-            private lateinit var sale: LocalDateTime
 
             @BeforeEach
             fun setUp() {
                 brokerCode = randomString()
-                calculationDate = randomDate().with(DayOfWeek.MONDAY)
-                lead = calculationDate.atStartOfDay().minusMonths(1)
-                sale = calculationDate.atStartOfDay()
-                Setup.a_broker(
+                a_broker(
                     codes = listOf(brokerCode),
                     statusHistory = mapOf(lead.toLocalDate() to Broker.Status.ACTIVE),
                     database = database
@@ -99,11 +99,11 @@ class FixTransactionAmountTest {
 
             @ParameterizedTest
             @ValueSource(ints = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-            fun calculateTransactions_leadBeforeCycle_saleInCycle(transactionAmount: Int) {
+            fun transactions_leadBeforeCycle_saleInCycle(transactionAmount: Int) {
                 // Given
                 val transactions = mutableListOf<Transaction>()
                 for (i in 1..transactionAmount) {
-                    transactions.add(Setup.a_transaction(
+                    transactions.add(a_transaction(
                         sale = sale,
                         lead = lead,
                         brokerCode = brokerCode,
@@ -131,10 +131,10 @@ class FixTransactionAmountTest {
             }
 
             @Test
-            fun calculateTransactions_notYetSold() {
+            fun notYetSold() {
                 // Given
                 val transactions = mutableListOf<Transaction>()
-                transactions.add(Setup.a_transaction(
+                transactions.add(a_transaction(
                     lead = lead,
                     brokerCode = brokerCode,
                     status = Transaction.Status.LEAD,
@@ -149,10 +149,10 @@ class FixTransactionAmountTest {
             }
 
             @Test
-            fun calculateTransactions_brokerNotFound() {
+            fun brokerNotFound() {
                 // Given
                 val transactions = mutableListOf<Transaction>()
-                transactions.add(Setup.a_transaction(
+                transactions.add(a_transaction(
                     lead = lead,
                     sale = sale,
                     brokerCode = randomString(),
