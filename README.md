@@ -75,7 +75,7 @@ problems in mind.
 I decided to create a Kotlin-App, because I wanted to learn Kotlin and the
 best way to learn something is to use it.\
 I also started without any framework, because I don't use what I don't need.\
-And at the start I have my tests to tell my I'm right or wrong.\
+And at the start I have my tests to tell my I'm right or wrong.
 
 ### Calculation
 
@@ -87,7 +87,7 @@ The commission types passed a lot of information to the calculation class -
 we basically created a new language that tried to inform the decision tree.
 I've worked on the commission type part of the project and had my troubles
 with it, even though I wasn't the one that came up with the idea, I was the
-one that had to maintain it and understood it the most.\
+one that had to maintain it and understood it the most.
 
 **New**:\
 This was the most outrageous part of the project, and I was really thinking
@@ -102,4 +102,4 @@ complex logic change the execution date.\
 The configurations therefore store all the complex logic and the calculation
 itself.\
 Sure we have some extravagant logic but putting it where it belongs and
-segregate it from the rest of the code makes it a lot easier to understand.\
+segregate it from the rest of the code makes it a lot easier to understand.
