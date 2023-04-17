@@ -70,10 +70,11 @@ class FixTransactionAmountTest {
     }
 
     @Nested
-    inner class CalculateConfiguration() {
+    inner class CalculateConfiguration {
         private lateinit var calculationDate: LocalDate
         private lateinit var lead: LocalDateTime
         private lateinit var sale: LocalDateTime
+        private lateinit var brokerCode: String
 
         @BeforeEach
         fun setUp() {
@@ -81,15 +82,14 @@ class FixTransactionAmountTest {
             calculationDate = randomDate().with(DayOfWeek.MONDAY)
             lead = calculationDate.atStartOfDay().minusMonths(1)
             sale = calculationDate.atStartOfDay()
+            brokerCode = randomString()
         }
 
         @Nested
-        inner class WithLeadActiveBroker() {
-            private lateinit var brokerCode: String
+        inner class WithActiveBroker {
 
             @BeforeEach
             fun setUp() {
-                brokerCode = randomString()
                 a_broker(
                     codes = listOf(brokerCode),
                     statusHistory = mapOf(lead.toLocalDate() to Broker.Status.ACTIVE),
@@ -131,7 +131,7 @@ class FixTransactionAmountTest {
             }
 
             @Test
-            fun notYetSold() {
+            fun no_sale_happened() {
                 // Given
                 val transactions = mutableListOf<Transaction>()
                 transactions.add(a_transaction(
@@ -149,7 +149,7 @@ class FixTransactionAmountTest {
             }
 
             @Test
-            fun brokerNotFound() {
+            fun wrong_broker_code() {
                 // Given
                 val transactions = mutableListOf<Transaction>()
                 transactions.add(a_transaction(
@@ -165,6 +165,150 @@ class FixTransactionAmountTest {
 
                 // Then
                 assertEquals(0, provisions.size, "provision size does not match")
+            }
+        }
+
+        @Nested
+        inner class WithOnlySaleActiveBroker {
+
+            @BeforeEach
+            fun setUp() {
+                a_broker(
+                    codes = listOf(brokerCode),
+                    statusHistory = mapOf(
+                        lead.toLocalDate() to Broker.Status.INACTIVE
+                    ),
+                    database = database
+                )
+            }
+
+            @Test
+            fun not_eligible_for_provision() {
+                // Given
+                a_transaction(
+                    sale = sale,
+                    lead = lead,
+                    brokerCode = brokerCode,
+                    status = Transaction.Status.SALE,
+                    database = database
+                )
+
+                // When
+                val provisions = configuration.calculate(calculationDate, database)
+
+                // Then
+                assertEquals(0, provisions.size, "provision size does not match")
+            }
+        }
+
+        @Nested
+        inner class WithOnlyLeadActiveBroker {
+
+            @BeforeEach
+            fun setUp() {
+                a_broker(
+                    codes = listOf(brokerCode),
+                    statusHistory = mapOf(
+                        lead.toLocalDate() to Broker.Status.ACTIVE,
+                        sale.toLocalDate() to Broker.Status.INACTIVE
+                    ),
+                    database = database
+                )
+            }
+
+            @Test
+            fun not_eligible_for_provision() {
+                // Given
+                a_transaction(
+                    sale = sale,
+                    lead = lead,
+                    brokerCode = brokerCode,
+                    status = Transaction.Status.SALE,
+                    database = database
+                )
+
+                // When
+                val provisions = configuration.calculate(calculationDate, database)
+
+                // Then
+                assertEquals(0, provisions.size, "provision size does not match")
+            }
+        }
+
+        @Nested
+        inner class WithNeverActiveBroker {
+
+            @BeforeEach
+            fun setUp() {
+                a_broker(
+                    codes = listOf(brokerCode),
+                    statusHistory = mapOf(
+                        lead.toLocalDate() to Broker.Status.INACTIVE
+                    ),
+                    database = database
+                )
+            }
+
+            @Test
+            fun not_eligible_for_provision() {
+                // Given
+                a_transaction(
+                    sale = sale,
+                    lead = lead,
+                    brokerCode = brokerCode,
+                    status = Transaction.Status.SALE,
+                    database = database
+                )
+
+                // When
+                val provisions = configuration.calculate(calculationDate, database)
+
+                // Then
+                assertEquals(0, provisions.size, "provision size does not match")
+            }
+        }
+
+        @Nested
+        inner class WithCurrentlyInactiveButWasActiveBroker {
+
+            @BeforeEach
+            fun setUp() {
+                if (calculationDate.dayOfMonth == 1) {
+                    calculationDate = calculationDate.plusWeeks(1)
+                }
+                a_broker(
+                    codes = listOf(brokerCode),
+                    statusHistory = mapOf(
+                        lead.toLocalDate() to Broker.Status.ACTIVE,
+                        sale.toLocalDate().plusDays(1) to Broker.Status.INACTIVE
+                    ),
+                    database = database
+                )
+            }
+
+            @Test
+            fun is_eligible_for_provision() {
+                // Given
+                val transaction = a_transaction(
+                    sale = sale,
+                    lead = lead,
+                    brokerCode = brokerCode,
+                    status = Transaction.Status.SALE,
+                    database = database
+                )
+
+                // When
+                val provisions = configuration.calculate(calculationDate, database)
+
+                // Then
+                assertEquals(1, provisions.size, "provision size does not match")
+                val provision = provisions.first()
+                assertEquals(amount, provision.sum, "sum does not match")
+                assertEquals(1, provision.transactions.size, "transaction size does not match")
+                provision.transactions.forEach { (t, v) ->
+                    assertEquals(transaction, t, "transaction does not match")
+                    assertEquals(amount, v.orElseThrow(), "transaction value does not match")
+                }
             }
         }
     }

@@ -21,11 +21,8 @@ data class Broker(
     fun wasActiveAt(date: LocalDate): Boolean {
         var beforeDate = LocalDate.MAX
         statusHistory.toSortedMap(Comparator.reverseOrder()).forEach { (dateOfStatus, status) ->
-            if (date in dateOfStatus..beforeDate && status == Status.ACTIVE) {
-                return true
-            }
-            if (date > dateOfStatus) {
-                return false
+            if (date in dateOfStatus..beforeDate) {
+                return  status == Status.ACTIVE
             }
             beforeDate = dateOfStatus
         }
