@@ -63,11 +63,11 @@ problems in mind.
 
 - easy extendable and maintainable code
 - new, flexible commission-calcuulations are to the upmost importance
-- fast in calculation
+- fast in calculation 10_000+ Transactions are commissioned per Minute
 - keep it as simple as possible
 - UI only through REST-APIs (we had JSF-Components before)
 - easy and meaningful test that everyone wants to add to
-- test execution including integration tests should take less than 10min
+- test execution including integration tests should take at max 10min
 - screw code coverage but I want 100% behavior coverage
 - keep documentation to a minimum and use it to explain why instead of how
 
