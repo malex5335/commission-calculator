@@ -14,7 +14,7 @@ To be fair we had to deliver Microservices and no one of us really knew how
 to create them.\
 After 2 years we were told by some Code-Testers, that our code was functional
 at best and that we should add plenty of tests to refactor our code.\
-At this time we had around 100k LOC and 50 Tests that took 6h to run.\
+At this time we had over 200k LOC and 50 Tests that took 6h to run.\
 I was quiet young and naive at the time and didn't really understand how to
 solve all those problems or how good code looked like.\
 We had external support in form of a Software Consultant that helped us
