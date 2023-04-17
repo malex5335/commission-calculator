@@ -28,8 +28,7 @@ class FixTransactionAmountTest {
         amount = randomAmount()
         configuration = FixTransactionAmount(
             name = name,
-            amount = amount,
-            database = database
+            amount = amount
         )
     }
 

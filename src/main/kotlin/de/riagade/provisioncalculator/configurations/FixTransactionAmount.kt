@@ -10,9 +10,8 @@ import java.time.temporal.TemporalAdjusters.lastDayOfMonth
 import java.util.*
 
 class FixTransactionAmount(
-    private val database: Database,
-    private val amount: BigDecimal,
-    private val name: String
+    private val name: String,
+    private val amount: BigDecimal
 ): Configuration {
 
     override fun name(): String {
@@ -25,32 +24,32 @@ class FixTransactionAmount(
 
     override fun calculate(date: LocalDate, database: Database): List<Provision> {
         val provisions = mutableListOf<Provision>()
-        val transactionsInTimespan = database.allTransactionsInTimespan(Configuration.Timespan(
+        val relevantTimespan = Configuration.Timespan(
             from = date.with(firstDayOfMonth()),
             to = date.with(lastDayOfMonth()),
             basis = Configuration.TimespanBasis.SALE
-        ))
-        soldTransactionsByBroker(transactionsInTimespan).forEach { (broker, transactions) ->
-            val singleTransactionAmounts = transactions.map { it to Optional.of(amount) }
-            if(singleTransactionAmounts.isNotEmpty()) {
-                provisions.add(
-                    Provision(
-                        broker = broker,
-                        sum = singleTransactionAmounts
-                            .map { it.second.orElse(BigDecimal.ZERO) }
-                            .fold(BigDecimal.ZERO, BigDecimal::add),
-                        transactions = singleTransactionAmounts.toMap(),
-                        configurationName = name(),
-                        status = Provision.Status.CALCULATED
+        )
+        val transactionsInTimespan = database.allTransactionsInTimespan(relevantTimespan)
+        relevantTransactionsByBroker(transactionsInTimespan, database)
+            .forEach { (broker, transactions) ->
+                val transactionAmounts = transactions.map { it to Optional.of(amount) }
+                if(transactionAmounts.isNotEmpty()) {
+                    provisions.add(
+                        Provision(
+                            broker = broker,
+                            sum = transactionAmounts.sumOf { it.second.orElse(BigDecimal.ZERO) },
+                            transactions = transactionAmounts.toMap(),
+                            configurationName = name(),
+                            status = Provision.Status.CALCULATED
+                        )
                     )
-                )
+                }
             }
-        }
         return provisions
     }
 
-    private fun soldTransactionsByBroker(transactionsInTimespan: List<Transaction>): Map<Broker, List<Transaction>> {
-        return transactionsInTimespan
+    private fun relevantTransactionsByBroker(transactionsToFilter: List<Transaction>, database: Database): Map<Broker, List<Transaction>> {
+        return transactionsToFilter
             .asSequence()
             .filter { !database.wasCalculatedBefore(it, this) }
             .filter { it.status == Transaction.Status.SALE }
