@@ -131,6 +131,14 @@ fun some_bankDetails(
     return bankDetails
 }
 
+fun mark_calculated_before(
+    transaction: Transaction,
+    configuration: Configuration,
+    database: MockDatabase
+) {
+    database.wasCalculatedBefore[transaction] = configuration
+}
+
 fun randomString(): String {
     return UUID.randomUUID().toString().substring(0,5)
 }

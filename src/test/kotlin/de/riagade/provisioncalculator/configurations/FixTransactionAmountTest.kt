@@ -75,6 +75,7 @@ class FixTransactionAmountTest {
         private lateinit var lead: LocalDateTime
         private lateinit var sale: LocalDateTime
         private lateinit var brokerCode: String
+        private lateinit var broker: Broker
 
         @BeforeEach
         fun setUp() {
@@ -90,7 +91,7 @@ class FixTransactionAmountTest {
 
             @BeforeEach
             fun setUp() {
-                a_broker(
+                broker = a_broker(
                     codes = listOf(brokerCode),
                     statusHistory = mapOf(lead.toLocalDate() to Broker.Status.ACTIVE),
                     database = database
@@ -99,13 +100,13 @@ class FixTransactionAmountTest {
 
             @ParameterizedTest
             @ValueSource(ints = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-            fun transactions_leadBeforeCycle_saleInCycle(transactionAmount: Int) {
+            fun multiple_transactions(transactionAmount: Int) {
                 // Given
                 val transactions = mutableListOf<Transaction>()
                 for (i in 1..transactionAmount) {
                     transactions.add(a_transaction(
-                        sale = sale,
                         lead = lead,
+                        sale = sale,
                         brokerCode = brokerCode,
                         status = Transaction.Status.SALE,
                         database = database
@@ -166,6 +167,33 @@ class FixTransactionAmountTest {
                 // Then
                 assertEquals(0, provisions.size, "provision size does not match")
             }
+
+            @Nested
+            inner class WasCalculatedBefore {
+
+                @Test
+                fun not_eligible_for_provision() {
+                    // Given
+                    val transaction = a_transaction(
+                        lead = lead,
+                        sale = sale,
+                        brokerCode = brokerCode,
+                        status = Transaction.Status.SALE,
+                        database = database
+                    )
+                    mark_calculated_before(
+                        transaction = transaction,
+                        configuration = configuration,
+                        database = database
+                    )
+
+                    // When
+                    val provisions = configuration.calculate(calculationDate, database)
+
+                    // Then
+                    assertEquals(0, provisions.size, "provision size does not match")
+                }
+            }
         }
 
         @Nested
@@ -186,8 +214,8 @@ class FixTransactionAmountTest {
             fun not_eligible_for_provision() {
                 // Given
                 a_transaction(
-                    sale = sale,
                     lead = lead,
+                    sale = sale,
                     brokerCode = brokerCode,
                     status = Transaction.Status.SALE,
                     database = database
@@ -220,8 +248,8 @@ class FixTransactionAmountTest {
             fun not_eligible_for_provision() {
                 // Given
                 a_transaction(
-                    sale = sale,
                     lead = lead,
+                    sale = sale,
                     brokerCode = brokerCode,
                     status = Transaction.Status.SALE,
                     database = database
@@ -253,8 +281,8 @@ class FixTransactionAmountTest {
             fun not_eligible_for_provision() {
                 // Given
                 a_transaction(
-                    sale = sale,
                     lead = lead,
+                    sale = sale,
                     brokerCode = brokerCode,
                     status = Transaction.Status.SALE,
                     database = database
@@ -290,8 +318,8 @@ class FixTransactionAmountTest {
             fun is_eligible_for_provision() {
                 // Given
                 val transaction = a_transaction(
-                    sale = sale,
                     lead = lead,
+                    sale = sale,
                     brokerCode = brokerCode,
                     status = Transaction.Status.SALE,
                     database = database

@@ -12,7 +12,8 @@ class MockDatabase(
     val bankDetails: MutableList<Broker.BankDetails> = mutableListOf(),
     val products: MutableList<Product> = mutableListOf(),
     val groups: MutableList<Product.Group> = mutableListOf(),
-    val savedProvisions: MutableList<Provision> = mutableListOf()
+    val savedProvisions: MutableList<Provision> = mutableListOf(),
+    val wasCalculatedBefore: MutableMap<Transaction, Configuration> = mutableMapOf()
 ): Database {
     override fun allConfigurations(): List<Configuration> {
         return configurations
@@ -39,10 +40,7 @@ class MockDatabase(
     }
 
     override fun wasCalculatedBefore(transaction: Transaction, configuration: Configuration): Boolean {
-        return provisions.any { provision ->
-            provision.transactions.keys.map { it.id }.contains(transaction.id)
-                    && provision.configurationName == configuration.name()
-        }
+        return wasCalculatedBefore[transaction] == configuration
     }
 
     fun clean() {
@@ -54,5 +52,6 @@ class MockDatabase(
         products.clear()
         groups.clear()
         savedProvisions.clear()
+        wasCalculatedBefore.clear()
     }
 }
