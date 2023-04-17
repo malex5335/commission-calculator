@@ -51,13 +51,20 @@ class FixTransactionAmount(
 
     private fun soldTransactionsByBroker(transactionsInTimespan: List<Transaction>): Map<Broker, List<Transaction>> {
         return transactionsInTimespan
+            .asSequence()
             .filter { !database.wasCalculatedBefore(it, this) }
             .filter { it.status == Transaction.Status.SALE }
             .groupBy { database.brokerFromCode(it.brokerCode) }
+            .filter { it.key != null }
             .map { (broker, transactions) ->
-                broker to transactions
-                    .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
-                    .filter { broker.wasActiveAt(it.sale.toLocalDate()) }
-            }.toMap()
+                if (broker != null) {
+                    broker to transactions
+                        .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
+                        .filter { broker.wasActiveAt(it.sale.toLocalDate()) }
+                } else {
+                    throw IllegalStateException("Broker is null")
+                }
+            }
+            .toMap()
     }
 }

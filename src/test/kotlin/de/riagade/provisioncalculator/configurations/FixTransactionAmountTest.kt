@@ -8,8 +8,11 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
 import java.math.BigDecimal
 import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class FixTransactionAmountTest {
 
@@ -66,81 +69,103 @@ class FixTransactionAmountTest {
         assertFalse(canBeCalculatedAt)
     }
 
-    @Test
-    fun calculate_single_saleToday_leadMonthAgo() {
-        // Given
-        val calculationDate = randomDate().with(DayOfWeek.MONDAY)
-        val lead = calculationDate.atStartOfDay().minusMonths(1)
-        val sale = calculationDate.atStartOfDay()
-        database.configurations.add(configuration)
-        val brokerCode = randomString()
-        Setup.a_broker(
-            codes = listOf(brokerCode),
-            statusHistory = mapOf(lead.toLocalDate() to Broker.Status.ACTIVE),
-            database = database
-        )
-        val transaction = Setup.a_transaction(
-            sale = sale,
-            lead = lead,
-            brokerCode = brokerCode,
-            status = Transaction.Status.SALE,
-            database = database
-        )
+    @Nested
+    inner class WithSavedConfiguration() {
 
-        // When
-        val provisions = configuration.calculate(calculationDate, database)
-
-        // Then
-        assertEquals(1, provisions.size, "provision size does not match")
-        val provision = provisions.first()
-        assertEquals(amount, provision.sum, "sum does not match")
-        assertEquals(1, provision.transactions.size, "transaction size does not match")
-        provision.transactions.forEach { (t, v) ->
-            assertEquals(transaction, t, "transaction does not match")
-            assertEquals(amount, v.orElseThrow(), "transaction value does not match")
+        @BeforeEach
+        fun setUp() {
+            database.configurations.add(configuration)
         }
-    }
 
-    @Test
-    fun calculate_multiple_saleToday_leadMonthAgo() {
-        // Given
-        val calculationDate = randomDate().with(DayOfWeek.MONDAY)
-        val lead = calculationDate.atStartOfDay().minusMonths(1)
-        val sale = calculationDate.atStartOfDay()
-        database.configurations.add(configuration)
-        val brokerCode = randomString()
-        Setup.a_broker(
-            codes = listOf(brokerCode),
-            statusHistory = mapOf(lead.toLocalDate() to Broker.Status.ACTIVE),
-            database = database
-        )
-        val transactions = mutableListOf<Transaction>()
-        transactions.add(Setup.a_transaction(
-            sale = sale,
-            lead = lead,
-            brokerCode = brokerCode,
-            status = Transaction.Status.SALE,
-            database = database
-        ))
-        transactions.add(Setup.a_transaction(
-            sale = sale,
-            lead = lead,
-            brokerCode = brokerCode,
-            status = Transaction.Status.SALE,
-            database = database
-        ))
+        @Nested
+        inner class WithLeadActiveBroker() {
+            private lateinit var brokerCode: String
+            private lateinit var calculationDate: LocalDate
+            private lateinit var lead: LocalDateTime
+            private lateinit var sale: LocalDateTime
 
-        // When
-        val provisions = configuration.calculate(calculationDate, database)
+            @BeforeEach
+            fun setUp() {
+                brokerCode = randomString()
+                calculationDate = randomDate().with(DayOfWeek.MONDAY)
+                lead = calculationDate.atStartOfDay().minusMonths(1)
+                sale = calculationDate.atStartOfDay()
+                Setup.a_broker(
+                    codes = listOf(brokerCode),
+                    statusHistory = mapOf(lead.toLocalDate() to Broker.Status.ACTIVE),
+                    database = database
+                )
+            }
 
-        // Then
-        assertEquals(1, provisions.size, "provision size does not match")
-        val provision = provisions.first()
-        assertEquals(amount.multiply(BigDecimal.valueOf(transactions.size.toLong())), provision.sum, "sum does not match")
-        assertEquals(transactions.size, provision.transactions.size, "transaction size does not match")
-        provision.transactions.forEach { (t, v) ->
-            assertTrue(transactions.contains(t), "transaction does not match")
-            assertEquals(amount, v.orElseThrow(), "transaction value does not match")
+            @ParameterizedTest
+            @ValueSource(ints = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+            fun calculateTransactions_leadBeforeCycle_saleInCycle(transactionAmount: Int) {
+                // Given
+                val transactions = mutableListOf<Transaction>()
+                for (i in 1..transactionAmount) {
+                    transactions.add(Setup.a_transaction(
+                        sale = sale,
+                        lead = lead,
+                        brokerCode = brokerCode,
+                        status = Transaction.Status.SALE,
+                        database = database
+                    ))
+                }
+
+                // When
+                val provisions = configuration.calculate(calculationDate, database)
+
+                // Then
+                assertEquals(1, provisions.size, "provision size does not match")
+                val provision = provisions.first()
+                assertEquals(
+                    amount.multiply(BigDecimal.valueOf(transactions.size.toLong())),
+                    provision.sum,
+                    "sum does not match"
+                )
+                assertEquals(transactions.size, provision.transactions.size, "transaction size does not match")
+                provision.transactions.forEach { (t, v) ->
+                    assertTrue(transactions.contains(t), "transaction does not match")
+                    assertEquals(amount, v.orElseThrow(), "transaction value does not match")
+                }
+            }
+
+            @Test
+            fun calculateTransactions_notYetSold() {
+                // Given
+                val transactions = mutableListOf<Transaction>()
+                transactions.add(Setup.a_transaction(
+                    lead = lead,
+                    brokerCode = brokerCode,
+                    status = Transaction.Status.LEAD,
+                    database = database
+                ))
+
+                // When
+                val provisions = configuration.calculate(calculationDate, database)
+
+                // Then
+                assertEquals(0, provisions.size, "provision size does not match")
+            }
+
+            @Test
+            fun calculateTransactions_brokerNotFound() {
+                // Given
+                val transactions = mutableListOf<Transaction>()
+                transactions.add(Setup.a_transaction(
+                    lead = lead,
+                    sale = sale,
+                    brokerCode = randomString(),
+                    status = Transaction.Status.SALE,
+                    database = database
+                ))
+
+                // When
+                val provisions = configuration.calculate(calculationDate, database)
+
+                // Then
+                assertEquals(0, provisions.size, "provision size does not match")
+            }
         }
     }
 }

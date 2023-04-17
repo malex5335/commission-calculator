@@ -34,8 +34,8 @@ class MockDatabase(
         savedProvisions.addAll(provisions)
     }
 
-    override fun brokerFromCode(brokerCode: String): Broker {
-        return brokers.first { it.codes.contains(brokerCode) }
+    override fun brokerFromCode(brokerCode: String): Broker? {
+        return brokers.firstOrNull { it.codes.contains(brokerCode) }
     }
 
     override fun wasCalculatedBefore(transaction: Transaction, configuration: Configuration): Boolean {
