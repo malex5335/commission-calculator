@@ -1,7 +1,7 @@
 package de.riagade.provisioncalculator.infra
 
 import de.riagade.provisioncalculator.*
-import de.riagade.provisioncalculator.configurations.VolumeTransactionAmount
+import de.riagade.provisioncalculator.configurations.VolumeTransactionProvision
 import de.riagade.provisioncalculator.entities.*
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -14,14 +14,14 @@ fun a_configuration(
     name: String = randomString(),
     canBeCalculatedAt: (LocalDate) -> Boolean = { true },
     calculate: (LocalDate, Database) -> List<Provision> = { _, _ -> emptyList() }
-): Configuration {
-    val configuration = object : Configuration {
+): ProvisionConfiguration {
+    val provisionConfiguration = object : ProvisionConfiguration {
         override fun name(): String = name
         override fun canBeCalculatedAt(date: LocalDate): Boolean = canBeCalculatedAt.invoke(date)
         override fun calculate(date: LocalDate, database: Database): List<Provision> = calculate.invoke(date, database)
     }
-    database?.configurations?.add(configuration)
-    return configuration
+    database?.provisionConfigurations?.add(provisionConfiguration)
+    return provisionConfiguration
 }
 
 fun a_provision(
@@ -134,10 +134,10 @@ fun some_bankDetails(
 
 fun mark_calculated_before(
     transaction: Transaction,
-    configuration: Configuration,
+    provisionConfiguration: ProvisionConfiguration,
     database: MockDatabase
 ) {
-    database.wasCalculatedBefore[transaction] = configuration
+    database.wasCalculatedBefore[transaction] = provisionConfiguration
 }
 
 fun randomString(): String {
@@ -148,8 +148,8 @@ fun randomAmount(): BigDecimal {
     return BigDecimal(random().nextDouble(0.0, 100_000_000.0)).setScale(2, RoundingMode.HALF_EVEN)
 }
 
-fun randomPercentage(): VolumeTransactionAmount.Percentage {
-    return VolumeTransactionAmount.Percentage.of(random().nextDouble(0.0, 100.0))
+fun randomPercentage(): VolumeTransactionProvision.Percentage {
+    return VolumeTransactionProvision.Percentage.of(random().nextDouble(0.0, 100.0))
 }
 
 fun randomDate(): LocalDate {

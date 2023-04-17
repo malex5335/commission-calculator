@@ -1,6 +1,6 @@
 package de.riagade.provisioncalculator.configurations
 
-import de.riagade.provisioncalculator.Configuration
+import de.riagade.provisioncalculator.ProvisionConfiguration
 import de.riagade.provisioncalculator.Database
 import de.riagade.provisioncalculator.entities.*
 import java.math.BigDecimal
@@ -9,10 +9,10 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.*
 
-class VolumeTransactionAmount(
+class VolumeTransactionProvision(
     val name: String,
     val percent: Percentage
-): Configuration {
+): ProvisionConfiguration {
     override fun name(): String {
         return name
     }

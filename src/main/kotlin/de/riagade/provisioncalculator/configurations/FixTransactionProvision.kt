@@ -7,10 +7,10 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.*
 
-class FixTransactionAmount(
+class FixTransactionProvision(
     private val name: String,
     private val amount: BigDecimal
-): Configuration {
+): ProvisionConfiguration {
 
     override fun name(): String {
         return name

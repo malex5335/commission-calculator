@@ -3,7 +3,7 @@ package de.riagade.provisioncalculator
 import de.riagade.provisioncalculator.entities.*
 import java.time.LocalDate
 
-interface Configuration {
+interface ProvisionConfiguration {
     fun name(): String
     fun canBeCalculatedAt(date: LocalDate): Boolean
     fun calculate(date: LocalDate, database: Database): List<Provision>

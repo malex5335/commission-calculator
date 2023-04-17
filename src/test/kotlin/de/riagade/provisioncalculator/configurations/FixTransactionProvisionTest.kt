@@ -14,9 +14,9 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class FixTransactionAmountTest {
+class FixTransactionProvisionTest {
     private lateinit var database: MockDatabase
-    private lateinit var configuration: FixTransactionAmount
+    private lateinit var configuration: FixTransactionProvision
     private lateinit var name: String
     private lateinit var amount: BigDecimal
 
@@ -25,7 +25,7 @@ class FixTransactionAmountTest {
         database = MockDatabase()
         name = randomString()
         amount = randomAmount()
-        configuration = FixTransactionAmount(
+        configuration = FixTransactionProvision(
             name = name,
             amount = amount
         )
@@ -68,7 +68,7 @@ class FixTransactionAmountTest {
     }
 
     @Nested
-    inner class CalculateConfiguration {
+    inner class CalculateProvisionConfiguration {
         private lateinit var calculationDate: LocalDate
         private lateinit var lead: LocalDateTime
         private lateinit var sale: LocalDateTime
@@ -77,7 +77,7 @@ class FixTransactionAmountTest {
 
         @BeforeEach
         fun setUp() {
-            database.configurations.add(configuration)
+            database.provisionConfigurations.add(configuration)
             calculationDate = randomDate().with(DayOfWeek.MONDAY)
             lead = calculationDate.atStartOfDay().minusMonths(1)
             sale = calculationDate.atStartOfDay()
@@ -181,7 +181,7 @@ class FixTransactionAmountTest {
                     )
                     mark_calculated_before(
                         transaction = transaction,
-                        configuration = configuration,
+                        provisionConfiguration = configuration,
                         database = database
                     )
 

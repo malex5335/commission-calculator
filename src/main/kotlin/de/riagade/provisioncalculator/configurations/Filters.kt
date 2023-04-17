@@ -20,13 +20,13 @@ fun mapToActiveBrokers(transactions: List<Transaction>, database: Database): Map
         }.toMap()
 }
 
-fun newTransactionsSoldThisMonth(configuration: Configuration, date: LocalDate, database: Database): List<Transaction> {
-    val relevantTimespan = Configuration.Timespan(
+fun newTransactionsSoldThisMonth(provisionConfiguration: ProvisionConfiguration, date: LocalDate, database: Database): List<Transaction> {
+    val relevantTimespan = ProvisionConfiguration.Timespan(
         from = date.with(firstDayOfMonth()),
         to = date.with(lastDayOfMonth()),
-        basis = Configuration.TimespanBasis.SALE
+        basis = ProvisionConfiguration.TimespanBasis.SALE
     )
     return database.allTransactionsInTimespan(relevantTimespan)
-        .filter { !database.wasCalculatedBefore(it, configuration) }
+        .filter { !database.wasCalculatedBefore(it, provisionConfiguration) }
         .filter { it.status == Transaction.Status.SALE }
 }

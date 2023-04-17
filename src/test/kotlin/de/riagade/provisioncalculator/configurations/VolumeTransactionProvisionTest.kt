@@ -1,6 +1,6 @@
 package de.riagade.provisioncalculator.configurations
 
-import de.riagade.provisioncalculator.configurations.VolumeTransactionAmount.Percentage
+import de.riagade.provisioncalculator.configurations.VolumeTransactionProvision.Percentage
 import de.riagade.provisioncalculator.entities.Broker
 import de.riagade.provisioncalculator.entities.Transaction
 import de.riagade.provisioncalculator.infra.*
@@ -15,9 +15,9 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class VolumeTransactionAmountTest {
+class VolumeTransactionProvisionTest {
     private lateinit var database: MockDatabase
-    private lateinit var configuration: VolumeTransactionAmount
+    private lateinit var configuration: VolumeTransactionProvision
     private lateinit var name: String
     private lateinit var percent: Percentage
 
@@ -26,7 +26,7 @@ class VolumeTransactionAmountTest {
         database = MockDatabase()
         name = randomString()
         percent = randomPercentage()
-        configuration = VolumeTransactionAmount(
+        configuration = VolumeTransactionProvision(
             name = name,
             percent = percent
         )
@@ -64,7 +64,7 @@ class VolumeTransactionAmountTest {
     }
 
     @Nested
-    inner class CalculateConfiguration {
+    inner class CalculateProvisionConfiguration {
         private lateinit var calculationDate: LocalDate
         private lateinit var lead: LocalDateTime
         private lateinit var sale: LocalDateTime
@@ -73,7 +73,7 @@ class VolumeTransactionAmountTest {
 
         @BeforeEach
         fun setUp() {
-            database.configurations.add(configuration)
+            database.provisionConfigurations.add(configuration)
             calculationDate = randomDate().with(DayOfWeek.MONDAY)
             lead = calculationDate.atStartOfDay().minusMonths(1)
             sale = calculationDate.atStartOfDay()
@@ -178,7 +178,7 @@ class VolumeTransactionAmountTest {
                     )
                     mark_calculated_before(
                         transaction = transaction,
-                        configuration = configuration,
+                        provisionConfiguration = configuration,
                         database = database
                     )
 
