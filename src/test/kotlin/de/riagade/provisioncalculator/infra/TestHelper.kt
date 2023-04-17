@@ -17,7 +17,7 @@ fun a_configuration(
 ): ProvisionConfiguration {
     val provisionConfiguration = object : ProvisionConfiguration {
         override fun name(): String = name
-        override fun canBeCalculatedAt(date: LocalDate): Boolean = canBeCalculatedAt.invoke(date)
+        override fun canBeCalculated(date: LocalDate): Boolean = canBeCalculatedAt.invoke(date)
         override fun calculate(date: LocalDate, database: Database): List<Provision> = calculate.invoke(date, database)
     }
     database?.provisionConfigurations?.add(provisionConfiguration)

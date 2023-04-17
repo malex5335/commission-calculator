@@ -44,7 +44,7 @@ class VolumeTransactionProvisionTest {
         val date = randomDate().with(dayOfWeek)
 
         // When
-        val canBeCalculatedAt = configuration.canBeCalculatedAt(date)
+        val canBeCalculatedAt = configuration.canBeCalculated(date)
 
         // Then
         assertTrue(canBeCalculatedAt)
@@ -57,7 +57,7 @@ class VolumeTransactionProvisionTest {
         val date = randomDate().with(dayOfWeek)
 
         // When
-        val canBeCalculatedAt = configuration.canBeCalculatedAt(date)
+        val canBeCalculatedAt = configuration.canBeCalculated(date)
 
         // Then
         assertFalse(canBeCalculatedAt)

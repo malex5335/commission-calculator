@@ -2,12 +2,12 @@ package de.riagade.provisioncalculator
 
 import java.time.LocalDate
 
-class Calculator(
+class Calculation(
     private val database: Database
 ) {
     fun calculateConfigurations(now: LocalDate) {
         database.allConfigurations()
-            .filter { it.canBeCalculatedAt(now) }
+            .filter { it.canBeCalculated(now) }
             .map { it.calculate(now, database) }
             .forEach { database.saveProvisions(it) }
     }

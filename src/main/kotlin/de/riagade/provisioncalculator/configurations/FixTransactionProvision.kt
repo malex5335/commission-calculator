@@ -19,7 +19,7 @@ class FixTransactionProvision(
         return name
     }
 
-    override fun canBeCalculatedAt(date: LocalDate): Boolean {
+    override fun canBeCalculated(date: LocalDate): Boolean {
         return date.dayOfWeek.equals(DayOfWeek.MONDAY)
     }
 
