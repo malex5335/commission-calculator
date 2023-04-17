@@ -65,6 +65,7 @@ problems in mind.
 - new, flexible commission-calcuulations are to the upmost importance
 - fast in calculation
 - keep it as simple as possible
+- UI only through REST-APIs (we had JSF-Components before)
 - easy and meaningful test that everyone wants to add to
 - test execution including integration tests should take less than 10min
 - screw code coverage but I want 100% behavior coverage
