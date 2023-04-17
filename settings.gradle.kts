@@ -1,3 +1,3 @@
 
-rootProject.name = "provision-calculator"
+rootProject.name = "commission-calculator"
 
