@@ -1,9 +1,9 @@
-package de.riagade.provisioncalculator.configurations
+package de.riagade.commissioncalculator.configurations
 
-import de.riagade.provisioncalculator.configurations.VolumeTransactionProvision.Percentage
-import de.riagade.provisioncalculator.entities.Broker
-import de.riagade.provisioncalculator.entities.Transaction
-import de.riagade.provisioncalculator.infra.*
+import de.riagade.commissioncalculator.configurations.VolumeTransactionCommission.Percentage
+import de.riagade.commissioncalculator.entities.Broker
+import de.riagade.commissioncalculator.entities.Transaction
+import de.riagade.commissioncalculator.infra.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -15,9 +15,9 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class VolumeTransactionProvisionTest {
+class VolumeTransactionCommissionTest {
     private lateinit var database: MockDatabase
-    private lateinit var configuration: VolumeTransactionProvision
+    private lateinit var configuration: VolumeTransactionCommission
     private lateinit var name: String
     private lateinit var percent: Percentage
 
@@ -26,7 +26,7 @@ class VolumeTransactionProvisionTest {
         database = MockDatabase()
         name = randomString()
         percent = randomPercentage()
-        configuration = VolumeTransactionProvision(
+        configuration = VolumeTransactionCommission(
             name = name,
             percent = percent
         )
@@ -64,7 +64,7 @@ class VolumeTransactionProvisionTest {
     }
 
     @Nested
-    inner class CalculateProvisionConfiguration {
+    inner class CalculateCommissionConfiguration {
         private lateinit var calculationDate: LocalDate
         private lateinit var lead: LocalDateTime
         private lateinit var sale: LocalDateTime
@@ -73,7 +73,7 @@ class VolumeTransactionProvisionTest {
 
         @BeforeEach
         fun setUp() {
-            database.provisionConfigurations.add(configuration)
+            database.commissionConfigurations.add(configuration)
             calculationDate = randomDate().with(DayOfWeek.MONDAY)
             lead = calculationDate.atStartOfDay().minusMonths(1)
             sale = calculationDate.atStartOfDay()
@@ -178,7 +178,7 @@ class VolumeTransactionProvisionTest {
                     )
                     mark_calculated_before(
                         transaction = transaction,
-                        provisionConfiguration = configuration,
+                        commissionConfiguration = configuration,
                         database = database
                     )
 

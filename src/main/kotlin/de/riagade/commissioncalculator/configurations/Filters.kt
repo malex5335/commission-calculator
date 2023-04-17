@@ -1,7 +1,7 @@
-package de.riagade.provisioncalculator.configurations
+package de.riagade.commissioncalculator.configurations
 
-import de.riagade.provisioncalculator.*
-import de.riagade.provisioncalculator.entities.*
+import de.riagade.commissioncalculator.*
+import de.riagade.commissioncalculator.entities.*
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters.firstDayOfMonth
 import java.time.temporal.TemporalAdjusters.lastDayOfMonth
@@ -20,13 +20,13 @@ fun mapToActiveBrokers(transactions: List<Transaction>, database: Database): Map
         }.toMap()
 }
 
-fun newTransactionsSoldThisMonth(provisionConfiguration: ProvisionConfiguration, date: LocalDate, database: Database): List<Transaction> {
-    val relevantTimespan = ProvisionConfiguration.Timespan(
+fun newTransactionsSoldThisMonth(commissionConfiguration: CommissionConfiguration, date: LocalDate, database: Database): List<Transaction> {
+    val relevantTimespan = CommissionConfiguration.Timespan(
         from = date.with(firstDayOfMonth()),
         to = date.with(lastDayOfMonth()),
-        basis = ProvisionConfiguration.TimespanBasis.SALE
+        basis = CommissionConfiguration.TimespanBasis.SALE
     )
     return database.allTransactionsInTimespan(relevantTimespan)
-        .filter { !database.wasCalculatedBefore(it, provisionConfiguration) }
+        .filter { !database.wasCalculatedBefore(it, commissionConfiguration) }
         .filter { it.status == Transaction.Status.SALE }
 }

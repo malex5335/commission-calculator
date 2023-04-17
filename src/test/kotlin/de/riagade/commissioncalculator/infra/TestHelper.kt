@@ -1,8 +1,8 @@
-package de.riagade.provisioncalculator.infra
+package de.riagade.commissioncalculator.infra
 
-import de.riagade.provisioncalculator.*
-import de.riagade.provisioncalculator.configurations.VolumeTransactionProvision
-import de.riagade.provisioncalculator.entities.*
+import de.riagade.commissioncalculator.*
+import de.riagade.commissioncalculator.configurations.VolumeTransactionCommission
+import de.riagade.commissioncalculator.entities.*
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.*
@@ -13,15 +13,15 @@ fun a_configuration(
     database: MockDatabase? = null,
     name: String = randomString(),
     canBeCalculatedAt: (LocalDate) -> Boolean = { true },
-    calculate: (LocalDate, Database) -> List<Provision> = { _, _ -> emptyList() }
-): ProvisionConfiguration {
-    val provisionConfiguration = object : ProvisionConfiguration {
+    calculate: (LocalDate, Database) -> List<Commission> = { _, _ -> emptyList() }
+): CommissionConfiguration {
+    val commissionConfiguration = object : CommissionConfiguration {
         override fun name(): String = name
         override fun canBeCalculated(date: LocalDate): Boolean = canBeCalculatedAt.invoke(date)
-        override fun calculate(date: LocalDate, database: Database): List<Provision> = calculate.invoke(date, database)
+        override fun calculate(date: LocalDate, database: Database): List<Commission> = calculate.invoke(date, database)
     }
-    database?.provisionConfigurations?.add(provisionConfiguration)
-    return provisionConfiguration
+    database?.commissionConfigurations?.add(commissionConfiguration)
+    return commissionConfiguration
 }
 
 fun a_provision(
@@ -30,17 +30,17 @@ fun a_provision(
     sum: BigDecimal = randomAmount(),
     transactions: Map<Transaction, Optional<BigDecimal>> = emptyMap(),
     configurationName: String = randomString(),
-    status: Provision.Status = Provision.Status.CALCULATED
-): Provision {
-    val provision = Provision(
+    status: Commission.Status = Commission.Status.CALCULATED
+): Commission {
+    val commission = Commission(
         broker = broker,
         sum = sum,
         transactions = transactions,
         configurationName = configurationName,
         status = status
     )
-    database?.provisions?.add(provision)
-    return provision
+    database?.commissions?.add(commission)
+    return commission
 }
 
 fun a_transaction(
@@ -134,10 +134,10 @@ fun some_bankDetails(
 
 fun mark_calculated_before(
     transaction: Transaction,
-    provisionConfiguration: ProvisionConfiguration,
+    commissionConfiguration: CommissionConfiguration,
     database: MockDatabase
 ) {
-    database.wasCalculatedBefore[transaction] = provisionConfiguration
+    database.wasCalculatedBefore[transaction] = commissionConfiguration
 }
 
 fun randomString(): String {
@@ -148,8 +148,8 @@ fun randomAmount(): BigDecimal {
     return BigDecimal(random().nextDouble(0.0, 100_000_000.0)).setScale(2, RoundingMode.HALF_EVEN)
 }
 
-fun randomPercentage(): VolumeTransactionProvision.Percentage {
-    return VolumeTransactionProvision.Percentage.of(random().nextDouble(0.0, 100.0))
+fun randomPercentage(): VolumeTransactionCommission.Percentage {
+    return VolumeTransactionCommission.Percentage.of(random().nextDouble(0.0, 100.0))
 }
 
 fun randomDate(): LocalDate {

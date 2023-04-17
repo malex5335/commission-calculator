@@ -1,8 +1,8 @@
-package de.riagade.provisioncalculator.configurations
+package de.riagade.commissioncalculator.configurations
 
-import de.riagade.provisioncalculator.entities.Broker
-import de.riagade.provisioncalculator.entities.Transaction
-import de.riagade.provisioncalculator.infra.*
+import de.riagade.commissioncalculator.entities.Broker
+import de.riagade.commissioncalculator.entities.Transaction
+import de.riagade.commissioncalculator.infra.*
 import org.junit.jupiter.api.*
 
 import org.junit.jupiter.api.Assertions.*
@@ -14,9 +14,9 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class FixTransactionProvisionTest {
+class FixTransactionCommissionTest {
     private lateinit var database: MockDatabase
-    private lateinit var configuration: FixTransactionProvision
+    private lateinit var configuration: FixTransactionCommission
     private lateinit var name: String
     private lateinit var amount: BigDecimal
 
@@ -25,7 +25,7 @@ class FixTransactionProvisionTest {
         database = MockDatabase()
         name = randomString()
         amount = randomAmount()
-        configuration = FixTransactionProvision(
+        configuration = FixTransactionCommission(
             name = name,
             amount = amount
         )
@@ -68,7 +68,7 @@ class FixTransactionProvisionTest {
     }
 
     @Nested
-    inner class CalculateProvisionConfiguration {
+    inner class CalculateCommissionConfiguration {
         private lateinit var calculationDate: LocalDate
         private lateinit var lead: LocalDateTime
         private lateinit var sale: LocalDateTime
@@ -77,7 +77,7 @@ class FixTransactionProvisionTest {
 
         @BeforeEach
         fun setUp() {
-            database.provisionConfigurations.add(configuration)
+            database.commissionConfigurations.add(configuration)
             calculationDate = randomDate().with(DayOfWeek.MONDAY)
             lead = calculationDate.atStartOfDay().minusMonths(1)
             sale = calculationDate.atStartOfDay()
@@ -181,7 +181,7 @@ class FixTransactionProvisionTest {
                     )
                     mark_calculated_before(
                         transaction = transaction,
-                        provisionConfiguration = configuration,
+                        commissionConfiguration = configuration,
                         database = database
                     )
 

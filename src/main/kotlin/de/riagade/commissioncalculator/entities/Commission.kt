@@ -1,9 +1,9 @@
-package de.riagade.provisioncalculator.entities
+package de.riagade.commissioncalculator.entities
 
 import java.math.BigDecimal
 import java.util.*
 
-data class Provision(
+data class Commission(
     val broker: Broker,
     val sum: BigDecimal,
     val transactions: Map<Transaction, Optional<BigDecimal>>,

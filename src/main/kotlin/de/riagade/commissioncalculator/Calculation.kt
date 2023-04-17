@@ -1,4 +1,4 @@
-package de.riagade.provisioncalculator
+package de.riagade.commissioncalculator
 
 import java.time.LocalDate
 
@@ -9,6 +9,6 @@ class Calculation(
         database.allConfigurations()
             .filter { it.canBeCalculated(now) }
             .map { it.calculate(now, database) }
-            .forEach { database.saveProvisions(it) }
+            .forEach { database.saveCommissions(it) }
     }
 }

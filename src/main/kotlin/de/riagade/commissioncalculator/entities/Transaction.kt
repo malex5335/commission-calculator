@@ -1,4 +1,4 @@
-package de.riagade.provisioncalculator.entities
+package de.riagade.commissioncalculator.entities
 
 import java.math.BigDecimal
 import java.time.LocalDateTime

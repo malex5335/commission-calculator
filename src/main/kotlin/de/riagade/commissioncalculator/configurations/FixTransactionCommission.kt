@@ -1,7 +1,7 @@
-package de.riagade.provisioncalculator.configurations
+package de.riagade.commissioncalculator.configurations
 
-import de.riagade.provisioncalculator.*
-import de.riagade.provisioncalculator.entities.*
+import de.riagade.commissioncalculator.*
+import de.riagade.commissioncalculator.entities.*
 import java.math.BigDecimal
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -10,10 +10,10 @@ import java.util.*
 /**
  * A configuration that calculates a fixed amount for each transaction sold this month.
  */
-class FixTransactionProvision(
+class FixTransactionCommission(
     private val name: String,
     private val amount: BigDecimal
-): ProvisionConfiguration {
+): CommissionConfiguration {
 
     override fun name(): String {
         return name
@@ -23,24 +23,24 @@ class FixTransactionProvision(
         return date.dayOfWeek.equals(DayOfWeek.MONDAY)
     }
 
-    override fun calculate(date: LocalDate, database: Database): List<Provision> {
-        val provisions = mutableListOf<Provision>()
+    override fun calculate(date: LocalDate, database: Database): List<Commission> {
+        val commissions = mutableListOf<Commission>()
         val relevantTransactions = newTransactionsSoldThisMonth(this, date, database)
         mapToActiveBrokers(relevantTransactions, database)
             .forEach { (broker, transactions) ->
                 val transactionAmounts = transactions.map { it to Optional.of(amount) }
                 if(transactionAmounts.isNotEmpty()) {
-                    provisions.add(
-                        Provision(
+                    commissions.add(
+                        Commission(
                             broker = broker,
                             sum = transactionAmounts.sumOf { it.second.orElse(BigDecimal.ZERO) },
                             transactions = transactionAmounts.toMap(),
                             configurationName = name(),
-                            status = Provision.Status.CALCULATED
+                            status = Commission.Status.CALCULATED
                         )
                     )
                 }
             }
-        return provisions
+        return commissions
     }
 }

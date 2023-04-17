@@ -1,6 +1,6 @@
-package de.riagade.provisioncalculator
+package de.riagade.commissioncalculator
 
-import de.riagade.provisioncalculator.infra.*
+import de.riagade.commissioncalculator.infra.*
 import org.junit.jupiter.api.*
 
 import org.junit.jupiter.api.Assertions.*
@@ -34,8 +34,8 @@ class CalculationTest {
         calculation.calculateConfigurations(randomDate())
 
         // Then
-        assertEquals(1, database.savedProvisions.size)
-        assertEquals(provision, database.savedProvisions[0])
+        assertEquals(1, database.savedCommissions.size)
+        assertEquals(provision, database.savedCommissions[0])
     }
 
     @Test
@@ -51,7 +51,7 @@ class CalculationTest {
         calculation.calculateConfigurations(randomDate())
 
         // Then
-        assertEquals(0, database.savedProvisions.size)
+        assertEquals(0, database.savedCommissions.size)
     }
 
     @Test
@@ -79,8 +79,8 @@ class CalculationTest {
         calculation.calculateConfigurations(randomDate())
 
         // Then
-        assertEquals(2, database.savedProvisions.size)
-        assertTrue(database.savedProvisions.containsAll(willBeCalculated))
-        assertFalse(database.savedProvisions.containsAll(wontBeCalculated))
+        assertEquals(2, database.savedCommissions.size)
+        assertTrue(database.savedCommissions.containsAll(willBeCalculated))
+        assertFalse(database.savedCommissions.containsAll(wontBeCalculated))
     }
 }

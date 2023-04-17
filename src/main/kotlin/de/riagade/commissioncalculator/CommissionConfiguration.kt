@@ -1,12 +1,12 @@
-package de.riagade.provisioncalculator
+package de.riagade.commissioncalculator
 
-import de.riagade.provisioncalculator.entities.*
+import de.riagade.commissioncalculator.entities.*
 import java.time.LocalDate
 
-interface ProvisionConfiguration {
+interface CommissionConfiguration {
     fun name(): String
     fun canBeCalculated(date: LocalDate): Boolean
-    fun calculate(date: LocalDate, database: Database): List<Provision>
+    fun calculate(date: LocalDate, database: Database): List<Commission>
 
     data class Timespan(
         val from: LocalDate,
