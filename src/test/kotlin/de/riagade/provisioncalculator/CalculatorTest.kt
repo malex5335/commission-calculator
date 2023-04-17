@@ -85,4 +85,34 @@ class CalculatorTest {
         assertTrue(database.savedProvisions.containsAll(listOf(provision1, provision2, provision3)))
     }
 
+    @Test
+    fun mixed_configurations_will_be_calculated() {
+        // Given
+        val provision1 = Setup.a_provision()
+        val provision2 = Setup.a_provision()
+        val provision3 = Setup.a_provision()
+        Setup.a_configuration(
+            canBeCalculatedAt = { true },
+            calculate = { _, _ -> listOf(provision1) },
+            database = database
+        )
+        Setup.a_configuration(
+            canBeCalculatedAt = { false },
+            calculate = { _, _ -> listOf(provision2) },
+            database = database
+        )
+        Setup.a_configuration(
+            canBeCalculatedAt = { true },
+            calculate = { _, _ -> listOf(provision3) },
+            database = database
+        )
+
+        // When
+        calculator.calculateConfigurations(randomDate())
+
+        // Then
+        assertEquals(2, database.savedProvisions.size)
+        assertTrue(database.savedProvisions.containsAll(listOf(provision1, provision3)))
+        assertFalse(database.savedProvisions.contains(provision2))
+    }
 }
