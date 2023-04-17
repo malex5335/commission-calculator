@@ -3,6 +3,7 @@ package de.riagade.provisioncalculator.infra
 import de.riagade.provisioncalculator.*
 import de.riagade.provisioncalculator.entities.*
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.*
 import java.util.*
 import kotlin.random.asKotlinRandom
@@ -27,7 +28,7 @@ class Setup {
         fun a_provision(
             database: MockDatabase? = null,
             broker: Broker = a_broker(database = database),
-            sum: BigDecimal = BigDecimal(100),
+            sum: BigDecimal = randomAmount(),
             transactions: Map<Transaction, Optional<BigDecimal>> = emptyMap(),
             configurationName: String = randomString(),
             status: Provision.Status = Provision.Status.CALCULATED
@@ -52,7 +53,7 @@ class Setup {
             sale: LocalDateTime = LocalDateTime.now(),
             status: Transaction.Status = Transaction.Status.LEAD,
             product: Product = a_product(database = database),
-            volume: BigDecimal = BigDecimal(100),
+            volume: BigDecimal = randomAmount(),
             brokerCode: String = randomString(),
             additionalOptions: Map<String, String> = emptyMap()
         ): Transaction {
@@ -136,6 +137,10 @@ class Setup {
 
 fun randomString(): String {
     return UUID.randomUUID().toString().substring(0,5)
+}
+
+fun randomAmount(): BigDecimal {
+    return BigDecimal(random().nextDouble(0.0, 100000.0)).setScale(2, RoundingMode.HALF_EVEN)
 }
 
 fun randomDate(): LocalDate {

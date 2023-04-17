@@ -26,7 +26,7 @@ class MockDatabase(
                 Configuration.TimespanBasis.LEAD -> it.lead
                 Configuration.TimespanBasis.UPDATED -> it.updated
             }.toLocalDate()
-            baseDate.isAfter(timespan.from) && baseDate.isBefore(timespan.to)
+            !baseDate.isBefore(timespan.from) && !baseDate.isAfter(timespan.to)
         }
     }
 
