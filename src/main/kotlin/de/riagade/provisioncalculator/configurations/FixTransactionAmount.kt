@@ -62,9 +62,8 @@ class FixTransactionAmount(
                         .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
                         .filter { broker.wasActiveAt(it.sale.toLocalDate()) }
                 } else {
-                    throw IllegalStateException("Broker is null")
+                    throw IllegalStateException("Broker is not allowed to be null")
                 }
-            }
-            .toMap()
+            }.toMap()
     }
 }
