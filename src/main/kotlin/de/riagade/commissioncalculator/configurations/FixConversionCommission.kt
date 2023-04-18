@@ -21,7 +21,7 @@ class FixConversionCommission(
 
     override fun calculate(date: LocalDate, database: Database): List<Commission> {
         val commissions = mutableListOf<Commission>()
-        val relevantTransactions = newTransactionsLeadThisMonth(this, date, database)
+        val relevantTransactions = newTransactionsLeadThisMonth(this, date.minusMonths(1), database)
         mapToActiveBrokers(relevantTransactions, database)
             .forEach { (broker, transactions) ->
                 val transactionAmounts = transactions.map { it to Optional.empty<BigDecimal>() }
