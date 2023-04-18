@@ -10,22 +10,21 @@ fun mapToActiveBrokers(transactions: List<Transaction>, database: Database): Map
     return transactions.groupBy { database.brokerFromCode(it.brokerCode) }
         .filter { it.key != null }
         .map { (broker, transactions) ->
-            if (broker != null) {
-                broker to transactions
-                    .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
-                    .filter {
-                        if(it.status == Transaction.Status.SALE){
-                            if(it.sale == null) {
-                                throw IllegalStateException("Sale date is not allowed to be null")
-                            }
-                            broker.wasActiveAt(it.sale.toLocalDate())
-                        } else {
-                            true
-                        }
-                    }
-            } else {
+            if (broker == null) {
                 throw IllegalStateException("Broker is not allowed to be null")
             }
+            broker to transactions
+                .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
+                .filter {
+                    if(it.status == Transaction.Status.SALE){
+                        if(it.sale == null) {
+                            throw IllegalStateException("Sale date is not allowed to be null")
+                        }
+                        broker.wasActiveAt(it.sale.toLocalDate())
+                    } else {
+                        true
+                    }
+                }
         }.toMap()
 }
 
