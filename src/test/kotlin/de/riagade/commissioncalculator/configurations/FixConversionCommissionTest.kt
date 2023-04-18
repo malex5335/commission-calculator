@@ -60,7 +60,7 @@ class FixConversionCommissionTest {
     }
 
     @Nested
-    inner class CalculateCommissionConfiguration {
+    inner class Calculate {
         private lateinit var database: MockDatabase
         private lateinit var brokerCode: String
         private lateinit var amount: BigDecimal

@@ -60,7 +60,7 @@ class VolumeTransactionCommissionTest {
     }
 
     @Nested
-    inner class CalculateCommissionConfiguration {
+    inner class Calculate {
         private lateinit var database: MockDatabase
         private lateinit var calculationDate: LocalDate
         private lateinit var lead: LocalDateTime
