@@ -30,22 +30,22 @@ fun mapToActiveBrokers(transactions: List<Transaction>, database: Database): Map
 }
 
 fun newTransactionsSoldThisMonth(commissionConfiguration: CommissionConfiguration, date: LocalDate, database: Database): List<Transaction> {
-    val relevantTimespan = CommissionConfiguration.Timespan(
-        from = date.with(firstDayOfMonth()),
-        to = date.with(lastDayOfMonth()),
-        basis = CommissionConfiguration.TimespanBasis.SALE
-    )
-    return database.allTransactionsInTimespan(relevantTimespan)
+    val timespan = monthTimeSpanBasedOn(CommissionConfiguration.TimespanBasis.SALE, date)
+    return database.allTransactionsInTimespan(timespan)
         .filter { !database.wasCalculatedBefore(it, commissionConfiguration) }
         .filter { it.status == Transaction.Status.SALE }
 }
 
 fun newTransactionsLeadThisMonth(commissionConfiguration: CommissionConfiguration, date: LocalDate, database: Database): List<Transaction> {
-    val relevantTimespan = CommissionConfiguration.Timespan(
+    val timespan = monthTimeSpanBasedOn(CommissionConfiguration.TimespanBasis.LEAD, date)
+    return database.allTransactionsInTimespan(timespan)
+        .filter { !database.wasCalculatedBefore(it, commissionConfiguration) }
+}
+
+fun monthTimeSpanBasedOn(basis: CommissionConfiguration.TimespanBasis, date: LocalDate): CommissionConfiguration.Timespan {
+    return CommissionConfiguration.Timespan(
         from = date.with(firstDayOfMonth()),
         to = date.with(lastDayOfMonth()),
-        basis = CommissionConfiguration.TimespanBasis.LEAD
+        basis = basis
     )
-    return database.allTransactionsInTimespan(relevantTimespan)
-        .filter { !database.wasCalculatedBefore(it, commissionConfiguration) }
 }
