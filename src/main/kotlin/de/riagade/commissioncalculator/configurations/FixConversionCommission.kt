@@ -7,6 +7,10 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
 
+/**
+ * A configuration that calculates a fixed amount to a broker depending on the number of transactions sold the
+ * previous month in relation to all transactions.
+ */
 class FixConversionCommission(
     val name: String,
     val crValues: Map<ConversionRate, BigDecimal>

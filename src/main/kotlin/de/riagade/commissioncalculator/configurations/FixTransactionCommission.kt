@@ -14,7 +14,6 @@ class FixTransactionCommission(
     private val name: String,
     private val amount: BigDecimal
 ): CommissionConfiguration {
-
     override fun name(): String {
         return name
     }
