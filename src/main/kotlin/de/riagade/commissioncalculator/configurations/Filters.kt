@@ -30,3 +30,13 @@ fun newTransactionsSoldThisMonth(commissionConfiguration: CommissionConfiguratio
         .filter { !database.wasCalculatedBefore(it, commissionConfiguration) }
         .filter { it.status == Transaction.Status.SALE }
 }
+
+fun newTransactionsLeadInYear(commissionConfiguration: CommissionConfiguration, year: Int, database: Database): List<Transaction> {
+    val relevantTimespan = CommissionConfiguration.Timespan(
+        from = LocalDate.of(year, 1, 1),
+        to = LocalDate.of(year, 12, 31),
+        basis = CommissionConfiguration.TimespanBasis.LEAD
+    )
+    return database.allTransactionsInTimespan(relevantTimespan)
+        .filter { !database.wasCalculatedBefore(it, commissionConfiguration) }
+}

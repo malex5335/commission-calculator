@@ -1,13 +1,9 @@
 package de.riagade.commissioncalculator.configurations
 
-import de.riagade.commissioncalculator.configurations.VolumeTransactionCommission.Percentage
-import de.riagade.commissioncalculator.entities.Broker
-import de.riagade.commissioncalculator.entities.Transaction
+import de.riagade.commissioncalculator.entities.*
 import de.riagade.commissioncalculator.infra.*
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
@@ -109,15 +105,15 @@ class VolumeTransactionCommissionTest {
                 }
 
                 // When
-                val provisions = configuration.calculate(calculationDate, database)
+                val commissions = configuration.calculate(calculationDate, database)
 
                 // Then
-                assertEquals(1, provisions.size, "provision size does not match")
-                val provision = provisions.first()
+                assertEquals(1, commissions.size, "commission size does not match")
+                val commission = commissions.first()
                 val totalSum = transactions.sumOf { percent.calculate(it.volume) }
-                assertEquals(totalSum, provision.sum, "sum does not match")
-                assertEquals(transactions.size, provision.transactions.size, "transaction size does not match")
-                provision.transactions.forEach { (t, v) ->
+                assertEquals(totalSum, commission.sum, "sum does not match")
+                assertEquals(transactions.size, commission.transactions.size, "transaction size does not match")
+                commission.transactions.forEach { (t, v) ->
                     assertTrue(transactions.contains(t), "transaction does not match")
                     assertEquals(percent.calculate(t.volume), v.orElseThrow(), "transaction value does not match")
                 }
@@ -136,10 +132,10 @@ class VolumeTransactionCommissionTest {
                 ))
 
                 // When
-                val provisions = configuration.calculate(calculationDate, database)
+                val commissions = configuration.calculate(calculationDate, database)
 
                 // Then
-                assertEquals(0, provisions.size, "provision size does not match")
+                assertEquals(0, commissions.size, "commission size does not match")
             }
 
             @Test
@@ -156,17 +152,17 @@ class VolumeTransactionCommissionTest {
                 ))
 
                 // When
-                val provisions = configuration.calculate(calculationDate, database)
+                val commissions = configuration.calculate(calculationDate, database)
 
                 // Then
-                assertEquals(0, provisions.size, "provision size does not match")
+                assertEquals(0, commissions.size, "commission size does not match")
             }
 
             @Nested
             inner class WasCalculatedBefore {
 
                 @Test
-                fun not_eligible_for_provision() {
+                fun not_eligible_for_commission() {
                     // Given
                     val transaction = a_transaction(
                         lead = lead,
@@ -183,10 +179,10 @@ class VolumeTransactionCommissionTest {
                     )
 
                     // When
-                    val provisions = configuration.calculate(calculationDate, database)
+                    val commissions = configuration.calculate(calculationDate, database)
 
                     // Then
-                    assertEquals(0, provisions.size, "provision size does not match")
+                    assertEquals(0, commissions.size, "commission size does not match")
                 }
             }
         }
@@ -206,7 +202,7 @@ class VolumeTransactionCommissionTest {
             }
 
             @Test
-            fun not_eligible_for_provision() {
+            fun not_eligible_for_commission() {
                 // Given
                 a_transaction(
                     lead = lead,
@@ -217,10 +213,10 @@ class VolumeTransactionCommissionTest {
                 )
 
                 // When
-                val provisions = configuration.calculate(calculationDate, database)
+                val commissions = configuration.calculate(calculationDate, database)
 
                 // Then
-                assertEquals(0, provisions.size, "provision size does not match")
+                assertEquals(0, commissions.size, "commission size does not match")
             }
         }
 
@@ -240,7 +236,7 @@ class VolumeTransactionCommissionTest {
             }
 
             @Test
-            fun not_eligible_for_provision() {
+            fun not_eligible_for_commission() {
                 // Given
                 a_transaction(
                     lead = lead,
@@ -252,10 +248,10 @@ class VolumeTransactionCommissionTest {
                 )
 
                 // When
-                val provisions = configuration.calculate(calculationDate, database)
+                val commissions = configuration.calculate(calculationDate, database)
 
                 // Then
-                assertEquals(0, provisions.size, "provision size does not match")
+                assertEquals(0, commissions.size, "commission size does not match")
             }
         }
 
@@ -274,7 +270,7 @@ class VolumeTransactionCommissionTest {
             }
 
             @Test
-            fun not_eligible_for_provision() {
+            fun not_eligible_for_commission() {
                 // Given
                 a_transaction(
                     lead = lead,
@@ -286,10 +282,10 @@ class VolumeTransactionCommissionTest {
                 )
 
                 // When
-                val provisions = configuration.calculate(calculationDate, database)
+                val commissions = configuration.calculate(calculationDate, database)
 
                 // Then
-                assertEquals(0, provisions.size, "provision size does not match")
+                assertEquals(0, commissions.size, "commission size does not match")
             }
         }
 
@@ -312,7 +308,7 @@ class VolumeTransactionCommissionTest {
             }
 
             @Test
-            fun is_eligible_for_provision() {
+            fun is_eligible_for_commission() {
                 // Given
                 val transaction = a_transaction(
                     lead = lead,
@@ -324,15 +320,15 @@ class VolumeTransactionCommissionTest {
                 )
 
                 // When
-                val provisions = configuration.calculate(calculationDate, database)
+                val commissions = configuration.calculate(calculationDate, database)
 
                 // Then
-                assertEquals(1, provisions.size, "provision size does not match")
-                val provision = provisions.first()
+                assertEquals(1, commissions.size, "commission size does not match")
+                val commission = commissions.first()
                 val amount = percent.calculate(transaction.volume)
-                assertEquals(amount, provision.sum, "sum does not match")
-                assertEquals(1, provision.transactions.size, "transaction size does not match")
-                provision.transactions.forEach { (t, v) ->
+                assertEquals(amount, commission.sum, "sum does not match")
+                assertEquals(1, commission.transactions.size, "transaction size does not match")
+                commission.transactions.forEach { (t, v) ->
                     assertEquals(transaction, t, "transaction does not match")
                     assertEquals(amount, v.orElseThrow(), "transaction value does not match")
                 }

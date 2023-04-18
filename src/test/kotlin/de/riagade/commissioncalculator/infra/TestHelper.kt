@@ -43,6 +43,28 @@ fun a_provision(
     return commission
 }
 
+fun multiple_transactions(
+    leadCount: Int,
+    saleCount: Int,
+    date: LocalDate,
+    brokerCode: String,
+    database: MockDatabase
+): List<Transaction> {
+    val transactions = mutableListOf<Transaction>()
+    for (i in 1..leadCount + saleCount) {
+        transactions.add(a_transaction(
+            created = date.atStartOfDay(),
+            updated = date.atStartOfDay(),
+            lead = date.atStartOfDay(),
+            sale = date.atStartOfDay(),
+            status = if (i <= leadCount) Transaction.Status.LEAD else Transaction.Status.SALE,
+            brokerCode = brokerCode,
+            database = database
+        ))
+    }
+    return transactions
+}
+
 fun a_transaction(
     database: MockDatabase? = null,
     id: String = randomString(),
@@ -148,8 +170,8 @@ fun randomAmount(): BigDecimal {
     return BigDecimal(random().nextDouble(0.0, 100_000_000.0)).setScale(2, RoundingMode.HALF_EVEN)
 }
 
-fun randomPercentage(): VolumeTransactionCommission.Percentage {
-    return VolumeTransactionCommission.Percentage.of(random().nextDouble(0.0, 100.0))
+fun randomPercentage(): Percentage {
+    return Percentage.of(random().nextDouble(0.0, 100.0))
 }
 
 fun randomDate(): LocalDate {
