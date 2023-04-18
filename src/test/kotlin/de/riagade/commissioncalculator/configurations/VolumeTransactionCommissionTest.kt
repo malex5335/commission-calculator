@@ -5,31 +5,23 @@ import de.riagade.commissioncalculator.infra.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
-import org.junit.jupiter.params.provider.ValueSource
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalDateTime
+import org.junit.jupiter.params.provider.*
+import java.time.*
 
 class VolumeTransactionCommissionTest {
-    private lateinit var database: MockDatabase
-    private lateinit var configuration: VolumeTransactionCommission
-    private lateinit var name: String
-    private lateinit var percent: Percentage
-
-    @BeforeEach
-    fun setUp() {
-        database = MockDatabase()
-        name = randomString()
-        percent = randomPercentage()
-        configuration = VolumeTransactionCommission(
-            name = name,
-            percent = percent
-        )
-    }
 
     @Test
     fun name_is_set() {
+        // Given
+        val name = randomString()
+
+        // When
+        val configuration = VolumeTransactionCommission(
+            name = name,
+            percent = randomPercentage()
+        )
+
+        // Then
         assertEquals(name, configuration.name())
     }
 
@@ -38,6 +30,10 @@ class VolumeTransactionCommissionTest {
     fun do_calculate_on(dayOfWeek: DayOfWeek) {
         // Given
         val date = randomDate().with(dayOfWeek)
+        val configuration = VolumeTransactionCommission(
+            name = randomString(),
+            percent = randomPercentage()
+        )
 
         // When
         val canBeCalculatedAt = configuration.canBeCalculated(date)
@@ -51,6 +47,10 @@ class VolumeTransactionCommissionTest {
     fun dont_calculate_on(dayOfWeek: DayOfWeek) {
         // Given
         val date = randomDate().with(dayOfWeek)
+        val configuration = VolumeTransactionCommission(
+            name = randomString(),
+            percent = randomPercentage()
+        )
 
         // When
         val canBeCalculatedAt = configuration.canBeCalculated(date)
@@ -61,19 +61,34 @@ class VolumeTransactionCommissionTest {
 
     @Nested
     inner class CalculateCommissionConfiguration {
+        private lateinit var database: MockDatabase
         private lateinit var calculationDate: LocalDate
         private lateinit var lead: LocalDateTime
         private lateinit var sale: LocalDateTime
         private lateinit var brokerCode: String
         private lateinit var broker: Broker
+        private lateinit var configuration: VolumeTransactionCommission
+        private lateinit var name: String
+        private lateinit var percent: Percentage
 
         @BeforeEach
         fun setUp() {
-            database.commissionConfigurations.add(configuration)
+            database = MockDatabase()
             calculationDate = randomDate().with(DayOfWeek.MONDAY)
             lead = calculationDate.atStartOfDay().minusMonths(1)
             sale = calculationDate.atStartOfDay()
             brokerCode = randomString()
+            name = randomString()
+            percent = randomPercentage()
+            configuration = VolumeTransactionCommission(
+                name = name,
+                percent = percent
+            )
+        }
+
+        @AfterEach
+        fun tearDown() {
+            database.clean()
         }
 
         @Nested

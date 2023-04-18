@@ -8,7 +8,7 @@ data class Transaction(
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val lead: LocalDateTime,
-    val sale: LocalDateTime,
+    val sale: LocalDateTime?,
     val status: Status,
     val product: Product,
     val volume: BigDecimal,

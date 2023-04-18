@@ -13,7 +13,16 @@ fun mapToActiveBrokers(transactions: List<Transaction>, database: Database): Map
             if (broker != null) {
                 broker to transactions
                     .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
-                    .filter { broker.wasActiveAt(it.sale.toLocalDate()) }
+                    .filter {
+                        if(it.status == Transaction.Status.SALE){
+                            if(it.sale == null) {
+                                throw IllegalStateException("Sale date is not allowed to be null")
+                            }
+                            broker.wasActiveAt(it.sale.toLocalDate())
+                        } else {
+                            true
+                        }
+                    }
             } else {
                 throw IllegalStateException("Broker is not allowed to be null")
             }
@@ -31,10 +40,10 @@ fun newTransactionsSoldThisMonth(commissionConfiguration: CommissionConfiguratio
         .filter { it.status == Transaction.Status.SALE }
 }
 
-fun newTransactionsLeadInYear(commissionConfiguration: CommissionConfiguration, year: Int, database: Database): List<Transaction> {
+fun newTransactionsLeadThisMonth(commissionConfiguration: CommissionConfiguration, date: LocalDate, database: Database): List<Transaction> {
     val relevantTimespan = CommissionConfiguration.Timespan(
-        from = LocalDate.of(year, 1, 1),
-        to = LocalDate.of(year, 12, 31),
+        from = date.with(firstDayOfMonth()),
+        to = date.with(lastDayOfMonth()),
         basis = CommissionConfiguration.TimespanBasis.LEAD
     )
     return database.allTransactionsInTimespan(relevantTimespan)

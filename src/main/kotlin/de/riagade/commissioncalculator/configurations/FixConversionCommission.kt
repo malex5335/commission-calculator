@@ -16,19 +16,20 @@ class FixConversionCommission(
     }
 
     override fun canBeCalculated(date: LocalDate): Boolean {
-        TODO("Not yet implemented")
+        return date.dayOfMonth == 1
     }
 
     override fun calculate(date: LocalDate, database: Database): List<Commission> {
         val commissions = mutableListOf<Commission>()
-        val relevantTransactions = newTransactionsLeadInYear(this, date.year, database)
+        val relevantTransactions = newTransactionsLeadThisMonth(this, date, database)
         mapToActiveBrokers(relevantTransactions, database)
             .forEach { (broker, transactions) ->
                 val transactionAmounts = transactions.map { it to Optional.empty<BigDecimal>() }
                 if(transactionAmounts.isNotEmpty()) {
-                    val leadCount = transactions.filter { it.status == Transaction.Status.LEAD }.size
-                    val saleCount = transactions.filter { it.status == Transaction.Status.SALE }.size
-                    val sum = ConversionRate.of(leadCount, saleCount).calculate(crValues)
+                    val sum = ConversionRate.of(
+                        relevantCount = transactions.filter { it.status == Transaction.Status.SALE }.size,
+                        notRelevantCount = transactions.filter { it.status != Transaction.Status.SALE }.size
+                    ).calculate(crValues)
                     if(sum != BigDecimal.ZERO) {
                         commissions.add(
                             Commission(

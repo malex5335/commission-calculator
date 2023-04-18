@@ -26,8 +26,12 @@ class MockDatabase(
                 CommissionConfiguration.TimespanBasis.SALE -> it.sale
                 CommissionConfiguration.TimespanBasis.LEAD -> it.lead
                 CommissionConfiguration.TimespanBasis.UPDATED -> it.updated
-            }.toLocalDate()
-            !baseDate.isBefore(timespan.from) && !baseDate.isAfter(timespan.to)
+            }?.toLocalDate()
+            if(baseDate == null) {
+                false
+            } else {
+                !baseDate.isBefore(timespan.from) && !baseDate.isAfter(timespan.to)
+            }
         }
     }
 

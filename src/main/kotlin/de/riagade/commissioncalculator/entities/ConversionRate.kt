@@ -26,8 +26,9 @@ data class ConversionRate(
             return ConversionRate(roundedValue)
         }
 
-        fun of(leadCount: Int, saleCount: Int): ConversionRate {
-            return ConversionRate(saleCount.toDouble() / leadCount.toDouble())
+        fun of(relevantCount: Int, notRelevantCount: Int): ConversionRate {
+            val total = relevantCount + notRelevantCount
+            return of(relevantCount.toDouble() / total.toDouble())
         }
     }
 }
