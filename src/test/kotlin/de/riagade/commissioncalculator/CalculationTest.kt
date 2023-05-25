@@ -23,10 +23,10 @@ class CalculationTest {
     @Test
     fun calculate_if_date_relevant() {
         // Given
-        val provision = a_provision()
+        val commission = a_commission()
         a_configuration(
             canBeCalculatedAt = { true },
-            calculate = { _, _ -> listOf(provision) },
+            calculate = { _, _ -> listOf(commission) },
             database = database
         )
 
@@ -35,7 +35,7 @@ class CalculationTest {
 
         // Then
         assertEquals(1, database.savedCommissions.size)
-        assertEquals(provision, database.savedCommissions[0])
+        assertEquals(commission, database.savedCommissions[0])
     }
 
     @Test
@@ -43,7 +43,7 @@ class CalculationTest {
         // Given
         a_configuration(
             canBeCalculatedAt = { false },
-            calculate = { _, _ -> listOf(a_provision()) },
+            calculate = { _, _ -> listOf(a_commission()) },
             database = database
         )
 
@@ -57,8 +57,8 @@ class CalculationTest {
     @Test
     fun mixed_configurations_will_be_calculated() {
         // Given
-        val willBeCalculated = mutableListOf(a_provision(), a_provision())
-        val wontBeCalculated = mutableListOf(a_provision())
+        val willBeCalculated = mutableListOf(a_commission(), a_commission())
+        val wontBeCalculated = mutableListOf(a_commission())
         a_configuration(
             canBeCalculatedAt = { true },
             calculate = { _, _ -> listOf(willBeCalculated[0]) },

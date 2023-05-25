@@ -23,7 +23,7 @@ fun a_configuration(
     return commissionConfiguration
 }
 
-fun a_provision(
+fun a_commission(
     database: MockDatabase? = null,
     broker: Broker = a_broker(database = database),
     sum: BigDecimal = randomAmount(),

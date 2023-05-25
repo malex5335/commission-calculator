@@ -107,7 +107,7 @@ class FixConversionCommissionTest {
             val commissions = configuration.calculate(calculationDate, database)
 
             // Then
-            assertEquals(1, commissions.size, "provision size does not match")
+            assertEquals(1, commissions.size, "commission size does not match")
             val commission = commissions.first()
             assertEquals(amount, commission.sum, "sum does not match")
             assertEquals(transactions.size, commission.transactions.size, "transaction size does not match")
@@ -147,7 +147,7 @@ class FixConversionCommissionTest {
             val commissions = configuration.calculate(calculationDate, database)
 
             // Then
-            assertEquals(1, commissions.size, "provision size does not match")
+            assertEquals(1, commissions.size, "commission size does not match")
             val commission = commissions.first()
             assertEquals(amount, commission.sum, "sum does not match")
             assertEquals(transactions.size, commission.transactions.size, "transaction size does not match")
@@ -187,7 +187,7 @@ class FixConversionCommissionTest {
             val commissions = configuration.calculate(calculationDate, database)
 
             // Then
-            assertEquals(1, commissions.size, "provision size does not match")
+            assertEquals(1, commissions.size, "commission size does not match")
             val commission = commissions.first()
             assertEquals(amount, commission.sum, "sum does not match")
             assertEquals(transactions.size, commission.transactions.size, "transaction size does not match")
