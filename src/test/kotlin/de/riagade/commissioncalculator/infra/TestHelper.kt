@@ -170,7 +170,7 @@ fun randomAmount(): BigDecimal {
 }
 
 fun randomPercentage(): Percentage {
-    return Percentage.of(random().nextDouble(0.0, 100.0))
+    return Percentage.of(random().nextDouble(0.0, 100.0).toFloat())
 }
 
 fun randomDate(): LocalDate {

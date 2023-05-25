@@ -2,20 +2,21 @@ package de.riagade.commissioncalculator.entities
 
 import java.math.BigDecimal
 import java.math.RoundingMode
+import kotlin.math.roundToInt
 
 data class Percentage(
-    private val value: Double
+    private val value: Float
 ) {
     fun calculate(amount: BigDecimal): BigDecimal {
-        return amount.multiply(BigDecimal(value)).divide(BigDecimal(100)).setScale(2, RoundingMode.HALF_UP)
+        return amount.multiply(BigDecimal((value/100).toDouble())).setScale(2, RoundingMode.HALF_UP)
     }
 
     companion object {
-        fun of(value: Double): Percentage {
+        fun of(value: Float): Percentage {
             if(value !in 0.0..100.0) {
                 throw IllegalArgumentException("Percentage $value must be between 0 and 100")
             }
-            val roundedValue = BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toDouble()
+            val roundedValue = (value*100).roundToInt() / 100f
             return Percentage(roundedValue)
         }
     }
