@@ -1,7 +1,6 @@
 package de.riagade.commissioncalculator.infra
 
 import de.riagade.commissioncalculator.*
-import de.riagade.commissioncalculator.configurations.VolumeTransactionCommission
 import de.riagade.commissioncalculator.entities.*
 import java.math.BigDecimal
 import java.math.RoundingMode

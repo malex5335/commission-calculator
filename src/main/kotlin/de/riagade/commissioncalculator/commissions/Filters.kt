@@ -1,32 +1,26 @@
-package de.riagade.commissioncalculator.configurations
+package de.riagade.commissioncalculator.commissions
 
-import de.riagade.commissioncalculator.*
-import de.riagade.commissioncalculator.entities.*
+import de.riagade.commissioncalculator.CommissionConfiguration
+import de.riagade.commissioncalculator.Database
+import de.riagade.commissioncalculator.entities.Broker
+import de.riagade.commissioncalculator.entities.Transaction
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters.firstDayOfMonth
 import java.time.temporal.TemporalAdjusters.lastDayOfMonth
 
-fun mapToActiveBrokers(transactions: List<Transaction>, database: Database): Map<Broker, List<Transaction>> {
+fun validBrokerTransactions(transactions: List<Transaction>, database: Database): Map<Broker, List<Transaction>> {
     return transactions.groupBy { database.brokerFromCode(it.brokerCode) }
-        .filter { it.key != null }
+        .filter { (broker, _) -> broker != null }
         .map { (broker, transactions) ->
-            if (broker != null) {
-                broker to transactions
-                    .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
-                    .filter {
-                        if(it.status == Transaction.Status.SALE){
-                            if(it.sale == null) {
-                                throw IllegalStateException("Sale date is not allowed to be null")
-                            }
-                            broker.wasActiveAt(it.sale.toLocalDate())
-                        } else {
-                            true
-                        }
-                    }
-            } else {
-                throw IllegalStateException("Broker is not allowed to be null")
-            }
-        }.toMap()
+            broker!! to transactions
+                .filter { broker.wasActiveAt(it.lead.toLocalDate()) }
+                .filter {
+                    if (it.status == Transaction.Status.SALE && it.sale != null)
+                        return@filter broker.wasActiveAt(it.sale.toLocalDate())
+                    return@filter broker.wasActiveAt(it.lead.toLocalDate())
+                }
+        }.filter { (_, transactions) -> transactions.isNotEmpty() }
+        .toMap()
 }
 
 fun newTransactionsSoldThisMonth(commissionConfiguration: CommissionConfiguration, date: LocalDate, database: Database): List<Transaction> {

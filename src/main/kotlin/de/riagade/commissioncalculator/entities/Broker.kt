@@ -22,7 +22,7 @@ data class Broker(
         var beforeDate = LocalDate.MAX
         statusHistory.toSortedMap(Comparator.reverseOrder()).forEach { (dateOfStatus, status) ->
             if (date in dateOfStatus..beforeDate) {
-                return  status == Status.ACTIVE
+                return status == Status.ACTIVE
             }
             beforeDate = dateOfStatus
         }

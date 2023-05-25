@@ -1,6 +1,8 @@
 package de.riagade.commissioncalculator
 
-import de.riagade.commissioncalculator.entities.*
+import de.riagade.commissioncalculator.entities.Broker
+import de.riagade.commissioncalculator.entities.Commission
+import de.riagade.commissioncalculator.entities.Transaction
 
 interface Database {
     fun allConfigurations(): List<CommissionConfiguration>

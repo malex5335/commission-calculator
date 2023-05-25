@@ -1,4 +1,4 @@
-package de.riagade.commissioncalculator.configurations
+package de.riagade.commissioncalculator.commissions
 
 import de.riagade.commissioncalculator.entities.*
 import de.riagade.commissioncalculator.infra.*

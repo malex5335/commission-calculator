@@ -1,6 +1,6 @@
 package de.riagade.commissioncalculator
 
-import de.riagade.commissioncalculator.entities.*
+import de.riagade.commissioncalculator.entities.Commission
 import java.time.LocalDate
 
 interface CommissionConfiguration {
