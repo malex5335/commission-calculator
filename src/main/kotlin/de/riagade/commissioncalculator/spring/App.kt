@@ -45,6 +45,12 @@ open class App {
         @RequestParam("span") timespan: Timespan
     ) = Gson().toJson(MainDb().transactionsForBroker(brokerId, timespan))
 
+    @GetMapping("/transactions/brokerCode")
+    fun transactionsForBrokerCode(
+        @RequestParam("id") brokerId: String,
+        @RequestParam("span") timespan: Timespan
+    ) = Gson().toJson(MainDb().transactionsForBrokerCode(brokerId, timespan))
+
     @GetMapping("/transactions")
     fun transactionsForTimespan(
         @RequestParam("span") timespan: Timespan

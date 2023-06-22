@@ -57,4 +57,8 @@ class MainDb: Database {
         }
         return emptyList()
     }
+
+    fun transactionsForBrokerCode(brokerId: String, timespan: Timespan): List<Transaction> {
+        return allTransactionsInTimespan(timespan).filter { it.brokerCode == brokerId }
+    }
 }
