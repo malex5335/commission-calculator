@@ -1,8 +1,8 @@
-package de.riagade.commissioncalculator.infra
+package de.riagade.commissioncalculator.core.infra
 
-import de.riagade.commissioncalculator.CommissionConfiguration
-import de.riagade.commissioncalculator.Database
-import de.riagade.commissioncalculator.entities.*
+import de.riagade.commissioncalculator.core.CommissionConfiguration
+import de.riagade.commissioncalculator.core.Database
+import de.riagade.commissioncalculator.core.entities.*
 
 class MockDatabase(
     val transactions: MutableList<Transaction> = mutableListOf(),
@@ -19,13 +19,13 @@ class MockDatabase(
         return commissionConfigurations
     }
 
-    override fun allTransactionsInTimespan(timespan: CommissionConfiguration.Timespan): List<Transaction> {
+    override fun allTransactionsInTimespan(timespan: Timespan): List<Transaction> {
         return transactions.filter {
             val baseDate = when(timespan.basis) {
-                CommissionConfiguration.TimespanBasis.CREATED -> it.created
-                CommissionConfiguration.TimespanBasis.SALE -> it.sale
-                CommissionConfiguration.TimespanBasis.LEAD -> it.lead
-                CommissionConfiguration.TimespanBasis.UPDATED -> it.updated
+                Timespan.Basis.CREATED -> it.created
+                Timespan.Basis.SALE -> it.sale
+                Timespan.Basis.LEAD -> it.lead
+                Timespan.Basis.UPDATED -> it.updated
             }?.toLocalDate()
             if(baseDate == null) {
                 false
@@ -45,6 +45,10 @@ class MockDatabase(
 
     override fun wasCalculatedBefore(transaction: Transaction, commissionConfiguration: CommissionConfiguration): Boolean {
         return wasCalculatedBefore[transaction] == commissionConfiguration
+    }
+
+    override fun readCommissions(): List<Commission> {
+        return commissions
     }
 
     fun clean() {

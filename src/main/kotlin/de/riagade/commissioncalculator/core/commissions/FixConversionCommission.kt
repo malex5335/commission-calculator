@@ -1,10 +1,10 @@
-package de.riagade.commissioncalculator.commissions
+package de.riagade.commissioncalculator.core.commissions
 
-import de.riagade.commissioncalculator.CommissionConfiguration
-import de.riagade.commissioncalculator.Database
-import de.riagade.commissioncalculator.entities.Commission
-import de.riagade.commissioncalculator.entities.ConversionRate
-import de.riagade.commissioncalculator.entities.Transaction
+import de.riagade.commissioncalculator.core.CommissionConfiguration
+import de.riagade.commissioncalculator.core.Database
+import de.riagade.commissioncalculator.core.entities.Commission
+import de.riagade.commissioncalculator.core.entities.ConversionRate
+import de.riagade.commissioncalculator.core.entities.Transaction
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
@@ -37,7 +37,8 @@ class FixConversionCommission(
                     ).calculate(crValues),
                     transactions = transactions.associateWith { Optional.empty<BigDecimal>() },
                     configurationName = name(),
-                    status = Commission.Status.CALCULATED
+                    status = Commission.Status.CALCULATED,
+                    scopeDate = date
                 )
             }.filter { it.sum.compareTo(BigDecimal.ZERO) != 0 }
     }

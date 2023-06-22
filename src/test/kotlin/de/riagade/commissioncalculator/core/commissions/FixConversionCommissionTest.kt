@@ -1,9 +1,13 @@
-package de.riagade.commissioncalculator.commissions
+package de.riagade.commissioncalculator.core.commissions
 
-import de.riagade.commissioncalculator.entities.*
-import de.riagade.commissioncalculator.infra.*
+import de.riagade.commissioncalculator.core.entities.Broker
+import de.riagade.commissioncalculator.core.entities.ConversionRate
+import de.riagade.commissioncalculator.core.infra.*
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters.firstDayOfMonth

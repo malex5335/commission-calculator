@@ -1,9 +1,13 @@
-package de.riagade.commissioncalculator
+package de.riagade.commissioncalculator.core
 
-import de.riagade.commissioncalculator.infra.*
-import org.junit.jupiter.api.*
-
+import de.riagade.commissioncalculator.core.infra.MockDatabase
+import de.riagade.commissioncalculator.core.infra.a_commission
+import de.riagade.commissioncalculator.core.infra.a_configuration
+import de.riagade.commissioncalculator.core.infra.randomDate
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class CalculationTest {
     private lateinit var database: MockDatabase

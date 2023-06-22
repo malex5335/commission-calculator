@@ -1,14 +1,22 @@
-package de.riagade.commissioncalculator.commissions
+package de.riagade.commissioncalculator.core.commissions
 
-import de.riagade.commissioncalculator.entities.*
-import de.riagade.commissioncalculator.infra.*
+import de.riagade.commissioncalculator.core.entities.Broker
+import de.riagade.commissioncalculator.core.entities.Transaction
+import de.riagade.commissioncalculator.core.infra.*
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.*
-import java.time.*
+import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
+import java.math.BigDecimal
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.LocalDateTime
 
-class VolumeTransactionCommissionTest {
+class FixTransactionCommissionTest {
 
     @Test
     fun name_is_set() {
@@ -16,9 +24,9 @@ class VolumeTransactionCommissionTest {
         val name = randomString()
 
         // When
-        val configuration = VolumeTransactionCommission(
+        val configuration = FixTransactionCommission(
             name = name,
-            percent = randomPercentage()
+            amount = randomAmount()
         )
 
         // Then
@@ -30,9 +38,9 @@ class VolumeTransactionCommissionTest {
     fun do_calculate_on(dayOfWeek: DayOfWeek) {
         // Given
         val date = randomDate().with(dayOfWeek)
-        val configuration = VolumeTransactionCommission(
+        val configuration = FixTransactionCommission(
             name = randomString(),
-            percent = randomPercentage()
+            amount = randomAmount()
         )
 
         // When
@@ -47,9 +55,9 @@ class VolumeTransactionCommissionTest {
     fun dont_calculate_on(dayOfWeek: DayOfWeek) {
         // Given
         val date = randomDate().with(dayOfWeek)
-        val configuration = VolumeTransactionCommission(
+        val configuration = FixTransactionCommission(
             name = randomString(),
-            percent = randomPercentage()
+            amount = randomAmount()
         )
 
         // When
@@ -67,9 +75,9 @@ class VolumeTransactionCommissionTest {
         private lateinit var sale: LocalDateTime
         private lateinit var brokerCode: String
         private lateinit var broker: Broker
-        private lateinit var configuration: VolumeTransactionCommission
         private lateinit var name: String
-        private lateinit var percent: Percentage
+        private lateinit var amount: BigDecimal
+        private lateinit var configuration: FixTransactionCommission
 
         @BeforeEach
         fun setUp() {
@@ -79,10 +87,10 @@ class VolumeTransactionCommissionTest {
             sale = calculationDate.atStartOfDay()
             brokerCode = randomString()
             name = randomString()
-            percent = randomPercentage()
-            configuration = VolumeTransactionCommission(
+            amount = randomAmount()
+            configuration = FixTransactionCommission(
                 name = name,
-                percent = percent
+                amount = amount
             )
         }
 
@@ -109,14 +117,15 @@ class VolumeTransactionCommissionTest {
                 // Given
                 val transactions = mutableListOf<Transaction>()
                 for (i in 1..transactionAmount) {
-                    transactions.add(a_transaction(
+                    transactions.add(
+                        a_transaction(
                         lead = lead,
                         sale = sale,
-                        volume = randomAmount(),
                         brokerCode = brokerCode,
                         status = Transaction.Status.SALE,
                         database = database
-                    ))
+                    )
+                    )
                 }
 
                 // When
@@ -125,12 +134,15 @@ class VolumeTransactionCommissionTest {
                 // Then
                 assertEquals(1, commissions.size, "commission size does not match")
                 val commission = commissions.first()
-                val totalSum = transactions.sumOf { percent.calculate(it.volume) }
-                assertEquals(totalSum, commission.sum, "sum does not match")
+                assertEquals(
+                    amount.multiply(BigDecimal.valueOf(transactions.size.toLong())),
+                    commission.sum,
+                    "sum does not match"
+                )
                 assertEquals(transactions.size, commission.transactions.size, "transaction size does not match")
                 commission.transactions.forEach { (t, v) ->
                     assertTrue(transactions.contains(t), "transaction does not match")
-                    assertEquals(percent.calculate(t.volume), v.orElseThrow(), "transaction value does not match")
+                    assertEquals(amount, v.orElseThrow(), "transaction value does not match")
                 }
             }
 
@@ -138,13 +150,14 @@ class VolumeTransactionCommissionTest {
             fun no_sale_happened() {
                 // Given
                 val transactions = mutableListOf<Transaction>()
-                transactions.add(a_transaction(
+                transactions.add(
+                    a_transaction(
                     lead = lead,
-                    volume = randomAmount(),
                     brokerCode = brokerCode,
                     status = Transaction.Status.LEAD,
                     database = database
-                ))
+                )
+                )
 
                 // When
                 val commissions = configuration.calculate(calculationDate, database)
@@ -157,14 +170,15 @@ class VolumeTransactionCommissionTest {
             fun wrong_broker_code() {
                 // Given
                 val transactions = mutableListOf<Transaction>()
-                transactions.add(a_transaction(
+                transactions.add(
+                    a_transaction(
                     lead = lead,
                     sale = sale,
-                    volume = randomAmount(),
                     brokerCode = randomString(),
                     status = Transaction.Status.SALE,
                     database = database
-                ))
+                )
+                )
 
                 // When
                 val commissions = configuration.calculate(calculationDate, database)
@@ -182,7 +196,6 @@ class VolumeTransactionCommissionTest {
                     val transaction = a_transaction(
                         lead = lead,
                         sale = sale,
-                        volume = randomAmount(),
                         brokerCode = brokerCode,
                         status = Transaction.Status.SALE,
                         database = database
@@ -257,7 +270,6 @@ class VolumeTransactionCommissionTest {
                     lead = lead,
                     sale = sale,
                     brokerCode = brokerCode,
-                    volume = randomAmount(),
                     status = Transaction.Status.SALE,
                     database = database
                 )
@@ -290,7 +302,6 @@ class VolumeTransactionCommissionTest {
                 a_transaction(
                     lead = lead,
                     sale = sale,
-                    volume = randomAmount(),
                     brokerCode = brokerCode,
                     status = Transaction.Status.SALE,
                     database = database
@@ -328,7 +339,6 @@ class VolumeTransactionCommissionTest {
                 val transaction = a_transaction(
                     lead = lead,
                     sale = sale,
-                    volume = randomAmount(),
                     brokerCode = brokerCode,
                     status = Transaction.Status.SALE,
                     database = database
@@ -340,7 +350,6 @@ class VolumeTransactionCommissionTest {
                 // Then
                 assertEquals(1, commissions.size, "commission size does not match")
                 val commission = commissions.first()
-                val amount = percent.calculate(transaction.volume)
                 assertEquals(amount, commission.sum, "sum does not match")
                 assertEquals(1, commission.transactions.size, "transaction size does not match")
                 commission.transactions.forEach { (t, v) ->

@@ -1,9 +1,9 @@
-package de.riagade.commissioncalculator.commissions
+package de.riagade.commissioncalculator.core.commissions
 
-import de.riagade.commissioncalculator.CommissionConfiguration
-import de.riagade.commissioncalculator.Database
-import de.riagade.commissioncalculator.entities.Commission
-import de.riagade.commissioncalculator.entities.Percentage
+import de.riagade.commissioncalculator.core.CommissionConfiguration
+import de.riagade.commissioncalculator.core.Database
+import de.riagade.commissioncalculator.core.entities.Commission
+import de.riagade.commissioncalculator.core.entities.Percentage
 import java.math.BigDecimal
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -33,7 +33,8 @@ class VolumeTransactionCommission(
                     sum = transactionAmounts.sumOf { it.second.orElse(BigDecimal.ZERO) },
                     transactions = transactionAmounts.toMap(),
                     configurationName = name(),
-                    status = Commission.Status.CALCULATED
+                    status = Commission.Status.CALCULATED,
+                    scopeDate = date
                 )
             }
     }

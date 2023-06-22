@@ -1,4 +1,4 @@
-package de.riagade.commissioncalculator
+package de.riagade.commissioncalculator.core
 
 import java.time.LocalDate
 

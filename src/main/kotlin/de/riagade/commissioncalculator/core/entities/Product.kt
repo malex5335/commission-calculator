@@ -1,4 +1,4 @@
-package de.riagade.commissioncalculator.entities
+package de.riagade.commissioncalculator.core.entities
 
 data class Product(
     val name: String,

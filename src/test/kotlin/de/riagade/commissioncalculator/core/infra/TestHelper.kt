@@ -1,10 +1,12 @@
-package de.riagade.commissioncalculator.infra
+package de.riagade.commissioncalculator.core.infra
 
-import de.riagade.commissioncalculator.*
-import de.riagade.commissioncalculator.entities.*
+import de.riagade.commissioncalculator.core.CommissionConfiguration
+import de.riagade.commissioncalculator.core.Database
+import de.riagade.commissioncalculator.core.entities.*
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.time.*
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.random.asKotlinRandom
 
@@ -36,7 +38,8 @@ fun a_commission(
         sum = sum,
         transactions = transactions,
         configurationName = configurationName,
-        status = status
+        status = status,
+        scopeDate = LocalDate.now()
     )
     database?.commissions?.add(commission)
     return commission
@@ -51,7 +54,8 @@ fun multiple_transactions(
 ): List<Transaction> {
     val transactions = mutableListOf<Transaction>()
     for (i in 1..leadCount + saleCount) {
-        transactions.add(a_transaction(
+        transactions.add(
+            a_transaction(
             created = date.atStartOfDay(),
             updated = date.atStartOfDay(),
             lead = date.atStartOfDay(),
@@ -59,7 +63,8 @@ fun multiple_transactions(
             status = if (i <= leadCount) Transaction.Status.LEAD else Transaction.Status.SALE,
             brokerCode = brokerCode,
             database = database
-        ))
+        )
+        )
     }
     return transactions
 }
