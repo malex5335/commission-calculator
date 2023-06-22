@@ -20,33 +20,33 @@ open class App {
     fun calculate(
         @RequestParam("date") date: LocalDate
     ): String {
-        Calculation(database = H2Db()).calculateConfigurations(date)
+        Calculation(database = MainDb()).calculateConfigurations(date)
         return "{\"result\": \"Calculated commissions for $date successfully.\"}"
     }
 
     @GetMapping("/commissions/broker")
     fun commissionsForBroker(
         @RequestParam("id") brokerId: String
-    ) = Gson().toJson(H2Db().commissionsForBroker(brokerId))
+    ) = Gson().toJson(MainDb().commissionsForBroker(brokerId))
 
     @GetMapping("/commissions/scoped")
     fun commissionsFromScopeDate(
         @RequestParam("date") date: LocalDate
-    ) = Gson().toJson(H2Db().commissionsFromScopeDate(date))
+    ) = Gson().toJson(MainDb().commissionsFromScopeDate(date))
 
     @GetMapping("/commissions/triggered")
     fun commissionsFromTriggerDate(
         @RequestParam("date") date: LocalDate
-    ) = Gson().toJson(H2Db().commissionsFromTriggerDate(date))
+    ) = Gson().toJson(MainDb().commissionsFromTriggerDate(date))
 
     @GetMapping("/transactions/broker")
     fun transactionsForBroker(
         @RequestParam("id") brokerId: String,
         @RequestParam("span") timespan: Timespan
-    ) = Gson().toJson(H2Db().transactionsForBroker(brokerId, timespan))
+    ) = Gson().toJson(MainDb().transactionsForBroker(brokerId, timespan))
 
     @GetMapping("/transactions")
     fun transactionsForTimespan(
         @RequestParam("span") timespan: Timespan
-    ) = Gson().toJson(H2Db().allTransactionsInTimespan(timespan))
+    ) = Gson().toJson(MainDb().allTransactionsInTimespan(timespan))
 }

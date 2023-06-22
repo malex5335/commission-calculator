@@ -8,7 +8,7 @@ import de.riagade.commissioncalculator.core.entities.Timespan
 import de.riagade.commissioncalculator.core.entities.Transaction
 import java.time.LocalDate
 
-class H2Db: Database {
+class MainDb: Database {
     override fun allConfigurations(): List<CommissionConfiguration> {
         TODO("Not yet implemented")
     }
